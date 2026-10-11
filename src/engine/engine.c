@@ -12,9 +12,7 @@ static double get_time() {
 int engine_init(engine_t* engine) {
     if(!engine) return 1;
     engine->running = 1;
-
-    renderer_clear(engine->renderer);
-
+    renderer_init(&engine->renderer, 80, 24);
     return 0;
 }
 
@@ -23,9 +21,10 @@ void engine_update(engine_t* engine, float dt) {
 
 void engine_draw(engine_t* engine) {
     if (!engine) return;
-
-    renderer_draw_char(engine->renderer, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 'X');
-    renderer_clear(engine->renderer);
+    
+    renderer_clear(&engine->renderer);
+    renderer_draw_char(&engine->renderer, 0, 0, 'X');
+    renderer_draw(&engine->renderer);
 }
 
 void engine_run(engine_t* engine) {
@@ -44,6 +43,5 @@ void engine_run(engine_t* engine) {
 void engine_shutdown(engine_t* engine) {
     if(!engine) return;
     engine->running = 0;
-
-    printf("\033[?25h");
+    renderer_destroy(&engine->renderer);
 }

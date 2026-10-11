@@ -4,7 +4,7 @@
 
 typedef struct {
     int running;
-    renderer_t* renderer;
+    renderer_t renderer;
 } engine_t;
 
 int engine_init(engine_t* engine);
