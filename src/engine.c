@@ -13,50 +13,23 @@ int engine_init(engine_t* engine) {
     if(!engine) return 1;
     engine->running = 1;
 
-    for (int y = 0; y < SCREEN_HEIGHT; y++) {
-        for (int x = 0; x < SCREEN_WIDTH; x++) {
-            engine->screen_buffer[y][x] = ' ';
-        }
-    }
+    renderer_clear(engine->renderer);
 
     return 0;
 }
 
 void engine_update(engine_t* engine, float dt) {
-    engine_draw_char(engine, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 'X');
 }
 
 void engine_draw(engine_t* engine) {
     if (!engine) return;
 
-    printf("\033[H");
-
-    for (int y = 0; y < SCREEN_HEIGHT; y++) {
-        for (int x = 0; x < SCREEN_WIDTH; x++) {
-            putchar(engine->screen_buffer[y][x]);
-        }
-        putchar('\n');
-    }
-
-    for (int y = 0; y < SCREEN_HEIGHT; y++) {
-        for (int x = 0; x < SCREEN_WIDTH; x++) {
-            engine->screen_buffer[y][x] = ' ';
-        }
-    }
-}
-
-void engine_draw_char(engine_t* engine, int x, int y, char c) {
-    if (!engine) return;
-
-    if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT) {
-        engine->screen_buffer[y][x] = c;
-    }
+    renderer_draw_char(engine->renderer, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 'X');
+    renderer_clear(engine->renderer);
 }
 
 void engine_run(engine_t* engine) {
     double prev_time = get_time();
-
-    printf("\033[2J\033[?25l");
 
     while(engine->running) {
         double curr_time = get_time();
