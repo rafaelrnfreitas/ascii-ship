@@ -1,5 +1,5 @@
 #include <math.h>
-#include "vec4.h"
+#include "math/vec4.h"
 
 vec4_t vec4_add(vec4_t a, vec4_t b) {
     return (vec4_t){a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w};

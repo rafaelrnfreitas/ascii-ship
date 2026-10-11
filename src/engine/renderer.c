@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
-#include "renderer.h"
+#include "engine/renderer.h"
 
 void renderer_draw_char(renderer_t* renderer, int x, int y, char c) {
     if (!renderer) return;

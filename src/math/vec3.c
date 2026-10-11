@@ -1,5 +1,5 @@
 #include <math.h>
-#include "vec3.h"
+#include "math/vec3.h"
 
 vec3_t vec3_add(vec3_t a, vec3_t b) {
     return (vec3_t){a.x + b.x, a.y + b.y, a.z + b.z};

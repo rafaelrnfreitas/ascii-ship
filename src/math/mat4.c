@@ -1,5 +1,5 @@
 #include <math.h>
-#include "mat4.h"
+#include "math/mat4.h"
 
 mat4_t mat4_identity(void) {
     return (mat4_t){{
