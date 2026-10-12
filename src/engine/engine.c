@@ -3,6 +3,8 @@
 #include <string.h>
 #include <unistd.h>
 #include "engine/engine.h"
+#include "engine/renderer.h"
+#include "game/scene.h"
 
 static double get_time() {
     struct timespec ts;
@@ -12,26 +14,24 @@ static double get_time() {
 
 int engine_init(engine_t* engine) {
     if(!engine) return 1;
-    engine->running = 1;
     if(renderer_init(&engine->renderer, 80, 24) != 0) return 1;
+    if(scene_init(&engine->scene) != 0) {
+        renderer_destroy(&engine->renderer);
+        return 1;
+    }
+    engine->running = 1;
     return 0;
 }
 
 void engine_update(engine_t* engine, float dt) {
-    
+    scene_update(&engine->scene, dt);
 }
 
 void engine_draw(engine_t* engine) {
-    if (!engine) return;
-
-    static int x = 0;
-    static int y = 0;
-
-    x++;
-    y++;
+    if(!engine) return;
     
     renderer_clear(&engine->renderer);
-    renderer_draw_char(&engine->renderer, x, y, 'X');
+    scene_draw(&engine->scene, &engine->renderer);
     renderer_draw(&engine->renderer);
 }
 
@@ -53,6 +53,7 @@ void engine_run(engine_t* engine) {
 
 void engine_shutdown(engine_t* engine) {
     if(!engine) return;
-    engine->running = 0;
+    scene_destroy(&engine->scene);
     renderer_destroy(&engine->renderer);
+    engine->running = 0;
 }

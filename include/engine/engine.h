@@ -1,10 +1,13 @@
 #ifndef ENGINE_H
 #define ENGINE_H
+
 #include "renderer.h"
+#include "game/scene.h"
 
 typedef struct {
     int running;
     renderer_t renderer;
+    scene_t scene;
 } engine_t;
 
 int engine_init(engine_t* engine);
