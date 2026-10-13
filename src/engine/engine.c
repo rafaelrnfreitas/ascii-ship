@@ -25,7 +25,7 @@ int engine_init(engine_t* engine) {
 
 void engine_update(engine_t* engine, float dt) {
     scene_update(&engine->scene, dt);
-}
+} 
 
 void engine_draw(engine_t* engine) {
     if(!engine) return;
