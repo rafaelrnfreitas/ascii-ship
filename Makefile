@@ -14,7 +14,7 @@ IFLAGS := $(addprefix -I, $(IDIRS))
 
 CPPFLAGS := $(IFLAGS) -MMD -MP -D_POSIX_C_SOURCE=200809L
 CFLAGS := -Wall -Wextra -std=c11 -g -O0 -fno-omit-frame-pointer
-LDLIBS := -lm
+LDLIBS := -lm -lncurses
 
 .PHONY: all clean
 

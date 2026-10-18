@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "engine/engine.h"
 #include "engine/renderer.h"
+#include "engine/input.h"
 #include "game/scene.h"
 
 static double get_time() {
@@ -14,9 +15,14 @@ static double get_time() {
 
 int engine_init(engine_t* engine) {
     if(!engine) return 1;
-    if(renderer_init(&engine->renderer, 80, 24) != 0) return 1;
+    if(input_init() != 0) return 1;
+    if(renderer_init(&engine->renderer, 80, 24) != 0) {
+        input_shutdown();
+        return 1;
+    }
     if(scene_init(&engine->scene) != 0) {
         renderer_destroy(&engine->renderer);
+        input_shutdown();
         return 1;
     }
     engine->running = 1;
@@ -24,8 +30,10 @@ int engine_init(engine_t* engine) {
 }
 
 void engine_update(engine_t* engine, float dt) {
+    input_update();
+    if(input_check_pressed(INPUT_KEY_ESC_QUIT)) engine->running = 0;
     scene_update(&engine->scene, dt);
-} 
+}
 
 void engine_draw(engine_t* engine) {
     if(!engine) return;
@@ -55,5 +63,6 @@ void engine_shutdown(engine_t* engine) {
     if(!engine) return;
     scene_destroy(&engine->scene);
     renderer_destroy(&engine->renderer);
+    input_shutdown();
     engine->running = 0;
 }
