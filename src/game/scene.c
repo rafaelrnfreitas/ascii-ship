@@ -90,7 +90,9 @@ void scene_draw(scene_t* scene, renderer_t* renderer) {
 void scene_destroy(scene_t* scene) {
     if(!scene) return;
 
-    for(size_t i = 0; i < scene->mesh_count; i++)
+    for(size_t i = 0; i < scene->mesh_count; i++) {
         mesh_destroy(scene->meshes[i]);
+        scene->meshes[i] = NULL;
+    }
     scene->mesh_count = 0;
 }

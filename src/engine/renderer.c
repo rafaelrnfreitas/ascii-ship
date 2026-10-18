@@ -15,25 +15,42 @@ int renderer_init(renderer_t* renderer, int width, int height) {
     
     renderer->width = width;
     renderer->height = height;
-    renderer->screen_buffer = malloc(width * height);
+    renderer->screen_buffer = malloc((size_t)width * (size_t)height);
 
     if(!renderer->screen_buffer) return 1;
-    
-    printf(SCREEN_CLEAR CURSOR_RESET CURSOR_HIDE);
+
+    fputs(SCREEN_CLEAR CURSOR_RESET CURSOR_HIDE, stdout);
+    fflush(stdout);
     renderer_clear(renderer);
     return 0;
 }
 
 void renderer_draw(renderer_t* renderer) {
     if(!renderer || !renderer->screen_buffer) return;
-    
-    printf(CURSOR_RESET);
-    for(int y = 0; y < renderer->height; y++) {
-        for(int x = 0; x < renderer->width; x++) {
-            putchar(renderer->screen_buffer[y * renderer->width + x]);
+
+    size_t w = (size_t)renderer->width;
+    size_t h = (size_t)renderer->height;
+    size_t cap = sizeof(CURSOR_RESET) + h * (w + 2);
+
+    char* frame = malloc(cap);
+    if(!frame) return;
+
+    size_t n = 0;
+    memcpy(frame, CURSOR_RESET, sizeof(CURSOR_RESET) - 1);
+    n += sizeof(CURSOR_RESET) - 1;
+
+    for(size_t y = 0; y < h; y++) {
+        memcpy(frame + n, renderer->screen_buffer + y * w, w);
+        n += w;
+        if(y + 1 < h) {
+            frame[n++] = '\r';
+            frame[n++] = '\n';
         }
-        putchar('\n');
     }
+
+    fwrite(frame, 1, n, stdout);
+    fflush(stdout);
+    free(frame);
 }
 
 void renderer_clear(renderer_t* renderer) {
@@ -94,6 +111,10 @@ void renderer_draw_mesh(renderer_t* renderer, mesh_t* mesh, mat4_t mvp) {
 
 void renderer_destroy(renderer_t* renderer) {
     if(!renderer) return;
+
     free(renderer->screen_buffer);
-    printf(CURSOR_SHOW);
+    renderer->screen_buffer = NULL;
+
+    fputs(CURSOR_SHOW, stdout);
+    fflush(stdout);
 }
