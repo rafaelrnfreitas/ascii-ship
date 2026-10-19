@@ -1,6 +1,9 @@
 #include "game/scene.h"
 #include "graphics/mesh.h"
 #include "math/mat4.h"
+#include "engine/input.h"
+
+#define PLAYER_SPEED 5.0f
 
 static float angle = 0;
 
@@ -8,7 +11,8 @@ int scene_init(scene_t* scene) {
     if(!scene) return 1;
 
     scene->mesh_count = 0;
-    scene->camera = (camera_t){{10, 0, 0}, {0, 0, 0}};
+    scene->camera = (camera_t){{0, -10, 0}, {0, 0, 0}};
+    scene->player = (player_t){{0, 0, 0}};
 
     vertex_t verts[] = {
         {{-1.0f, -1.0f,  1.0f}, {0.0f, 0.0f,  1.0f}},
@@ -66,6 +70,13 @@ int scene_init(scene_t* scene) {
 
 void scene_update(scene_t* scene, float dt) {
     angle += dt;
+
+    float step = PLAYER_SPEED * dt;
+
+    if(input_check(INPUT_KEY_D) || input_check(INPUT_KEY_RIGHT)) scene->player.pos.x += step;
+    if(input_check(INPUT_KEY_A) || input_check(INPUT_KEY_LEFT))  scene->player.pos.x -= step;
+    if(input_check(INPUT_KEY_W) || input_check(INPUT_KEY_UP))    scene->player.pos.z += step;
+    if(input_check(INPUT_KEY_S) || input_check(INPUT_KEY_DOWN))  scene->player.pos.z -= step;
 }
 
 void scene_draw(scene_t* scene, renderer_t* renderer) {
@@ -74,6 +85,7 @@ void scene_draw(scene_t* scene, renderer_t* renderer) {
         model = mat4_mul(mat4_rotx(angle), model);
         model = mat4_mul(mat4_roty(angle), model);
         model = mat4_mul(mat4_rotz(angle), model);
+        model = mat4_mul(mat4_translate(scene->player.pos), model);
 
         renderer_draw_mesh(renderer, scene->meshes[i], model, scene->camera);
     }

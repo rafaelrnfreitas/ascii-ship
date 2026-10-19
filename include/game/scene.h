@@ -3,6 +3,7 @@
 
 #include "graphics/mesh.h"
 #include "graphics/camera.h"
+#include "game/player.h"
 #include "engine/renderer.h"
 
 #define MAX_MESHES 64
@@ -11,6 +12,7 @@ typedef struct {
     mesh_t* meshes[MAX_MESHES];
     size_t mesh_count;
     camera_t camera;
+    player_t player;
 } scene_t;
 
 int scene_init(scene_t* scene);
