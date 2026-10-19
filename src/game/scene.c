@@ -8,6 +8,7 @@ int scene_init(scene_t* scene) {
     if(!scene) return 1;
 
     scene->mesh_count = 0;
+    scene->camera = (camera_t){{10, 0, 0}, {0, 0, 0}};
 
     vertex_t verts[] = {
         {{-1.0f, -1.0f,  1.0f}, {0.0f, 0.0f,  1.0f}},
@@ -74,16 +75,7 @@ void scene_draw(scene_t* scene, renderer_t* renderer) {
         model = mat4_mul(mat4_roty(angle), model);
         model = mat4_mul(mat4_rotz(angle), model);
 
-        mat4_t view = mat4_lookat((vec3_t){10, 0, 0}, (vec3_t){0, 0, 0});
-        mat4_t proj = mat4_perspective(
-                        0.5f, 
-                        (float)renderer->width / (float)renderer->height, 
-                        1, 
-                        100 
-                    );
-
-        mat4_t mvp = mat4_mul(proj, mat4_mul(view, model));
-        renderer_draw_mesh(renderer, scene->meshes[i], mvp);
+        renderer_draw_mesh(renderer, scene->meshes[i], model, scene->camera);
     }
 }
 

@@ -84,8 +84,17 @@ vec3_t proj_vert(vertex_t v, mat4_t mvp, int width, int height) {
     };
 }
 
-void renderer_draw_mesh(renderer_t* renderer, mesh_t* mesh, mat4_t mvp) {
+void renderer_draw_mesh(renderer_t* renderer, mesh_t* mesh, mat4_t model, camera_t cam) {
     if(!renderer || !mesh) return;
+
+    mat4_t view = mat4_lookat(cam.pos, cam.target);
+    mat4_t proj = mat4_perspective(
+                    0.5f, 
+                    (float)renderer->width / (float)renderer->height, 
+                    1, 
+                    100 
+                );
+    mat4_t mvp = mat4_mul(proj, mat4_mul(view, model));
 
     for(size_t i = 0; i + 2 < mesh->index_count; i += 3) {
         size_t i1 = mesh->indices[i];
