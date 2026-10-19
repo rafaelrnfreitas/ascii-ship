@@ -1,8 +1,10 @@
+#include <stdio.h>
 #include <ncurses.h>
 #include <time.h>
 #include "engine/input.h"
 
 static int initialized = 0;
+static SCREEN* screen = NULL;
 static int down[INPUT_KEY_COUNT];
 static int prev_down[INPUT_KEY_COUNT];
 static double last_seen[INPUT_KEY_COUNT];
@@ -36,7 +38,10 @@ static int valid(input_key_t key) {
 
 int input_init(void) {
     if(initialized) return 0;
-    if(initscr() == NULL) return 1;
+    // newterm em vez de initscr: devolve o SCREEN* para liberar com delscreen
+    screen = newterm(NULL, stdout, stdin);
+    if(screen == NULL) return 1;
+    set_term(screen);
 
     cbreak();
     noecho();
@@ -75,6 +80,8 @@ void input_update(void) {
 void input_shutdown(void) {
     if(!initialized) return;
     endwin();
+    delscreen(screen);
+    screen = NULL;
     initialized = 0;
 }
 
