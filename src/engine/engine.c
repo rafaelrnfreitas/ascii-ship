@@ -31,7 +31,10 @@ int engine_init(engine_t* engine) {
 
 void engine_update(engine_t* engine, float dt) {
     input_update();
-    if(input_check_pressed(INPUT_KEY_ESC_QUIT)) engine->running = 0;
+    if(input_check_pressed(INPUT_KEY_ESC_QUIT)) {
+        engine_shutdown(engine);
+        return;
+    }
     scene_update(&engine->scene, dt);
 }
 
