@@ -30,6 +30,8 @@ int engine_init(engine_t* engine) {
 }
 
 void engine_update(engine_t* engine, float dt) {
+    if(!engine || !engine->running) return;
+
     input_update();
     if(input_check_pressed(INPUT_KEY_ESC_QUIT)) {
         engine_shutdown(engine);
@@ -39,7 +41,7 @@ void engine_update(engine_t* engine, float dt) {
 }
 
 void engine_draw(engine_t* engine) {
-    if(!engine) return;
+    if(!engine || !engine->running) return;
     
     renderer_clear(&engine->renderer);
     scene_draw(&engine->scene, &engine->renderer);
@@ -63,7 +65,8 @@ void engine_run(engine_t* engine) {
 }
 
 void engine_shutdown(engine_t* engine) {
-    if(!engine) return;
+    if(!engine || !engine->running) return;
+
     scene_destroy(&engine->scene);
     renderer_destroy(&engine->renderer);
     input_shutdown();
