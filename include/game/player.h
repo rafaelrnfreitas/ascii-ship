@@ -9,6 +9,7 @@
 typedef struct {
     vec3_t pos;
     vec3_t vel;
+    vec3_t rot;
     float spd;
     mesh_t* mesh;
 } player_t;
