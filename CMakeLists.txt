@@ -19,6 +19,7 @@ add_executable(game
     src/math/vec2.c
     src/math/vec3.c
     src/math/vec4.c
+    src/graphics/light.c
 )
 
 target_include_directories(game PRIVATE "${CMAKE_SOURCE_DIR}/include")

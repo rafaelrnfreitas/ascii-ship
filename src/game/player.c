@@ -85,11 +85,11 @@ void player_update(player_t* player, float dt) {
     player_move(player, dt);
 }
 
-void player_draw(player_t* player, renderer_t* renderer, camera_t camera) {
+void player_draw(player_t* player, renderer_t* renderer, camera_t camera, light_t* lights, int light_count) {
     mat4_t model = mat4_identity();   
     model = mat4_mul(mat4_translate(player->pos), model);
 
-    renderer_draw_mesh(renderer, player->mesh, model, camera);
+    renderer_draw_mesh(renderer, player->mesh, model, camera, lights, light_count);
 }
 
 void player_destroy(player_t* player) {

@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "engine/renderer.h"
 #include "graphics/mesh.h"
+#include "graphics/light.h"
+#include "math/mat4.h"
 
 #define COLOR_BLACK 0x000000FFU
 #define COLOR_WHITE 0xFFFFFFFFU
@@ -91,16 +94,23 @@ static vec3_t proj_vert(vertex_t v, mat4_t mvp, int width, int height) {
     };
 }
 
-void renderer_draw_mesh(renderer_t* renderer, mesh_t* mesh, mat4_t model, camera_t cam) {
+void renderer_draw_mesh(
+        renderer_t* renderer, 
+        mesh_t* mesh, 
+        mat4_t model, 
+        camera_t cam, 
+        light_t* lights, 
+        int light_count
+    ) {
     if(!renderer || !mesh) return;
 
     mat4_t view = mat4_lookat(cam.pos, cam.target);
     mat4_t proj = mat4_perspective(
-                    0.5f, 
-                    (float)renderer->width / (float)renderer->height, 
-                    1, 
-                    100 
-                );
+        0.5f, 
+        (float)renderer->width / (float)renderer->height, 
+        1, 
+        100 
+    );
     mat4_t mvp = mat4_mul(proj, mat4_mul(view, model));
 
     for(size_t i = 0; i + 2 < mesh->index_count; i += 3) {
@@ -120,12 +130,13 @@ void renderer_draw_mesh(renderer_t* renderer, mesh_t* mesh, mat4_t model, camera
         if(p1.z > 1 || p2.z > 1 || p3.z > 1) continue;
 
         float area = (p2.x - p1.x) * (p3.y - p1.y) - (p2.y - p1.y) * (p3.x - p1.x);
-        if(area >= 0.0f) continue; // face de tras ou degenerada
+        if(area >= 0.0f) continue;
 
         float fmin_x = p1.x < p2.x ? p1.x : p2.x;
         float fmax_x = p1.x > p2.x ? p1.x : p2.x;
         float fmin_y = p1.y < p2.y ? p1.y : p2.y;
         float fmax_y = p1.y > p2.y ? p1.y : p2.y;
+
         if(p3.x < fmin_x) fmin_x = p3.x;
         if(p3.x > fmax_x) fmax_x = p3.x;
         if(p3.y < fmin_y) fmin_y = p3.y;
@@ -136,18 +147,104 @@ void renderer_draw_mesh(renderer_t* renderer, mesh_t* mesh, mat4_t model, camera
         int max_x = fmax_x >= renderer->width ? renderer->width - 1 : (int)fmax_x;
         int max_y = fmax_y >= renderer->height ? renderer->height - 1 : (int)fmax_y;
 
+        float r = 0.0f;
+        float g = 0.0f;
+        float b = 0.0f;
+
+        vec4_t n1_4 = mat4_mul_vec4(
+            model, (vec4_t){v1.normal.x, v1.normal.y, v1.normal.z, 0.0f}
+        );
+        vec4_t n2_4 = mat4_mul_vec4(
+            model, (vec4_t){v2.normal.x, v2.normal.y, v2.normal.z, 0.0f}
+        );
+        vec4_t n3_4 = mat4_mul_vec4(
+            model, (vec4_t){v3.normal.x, v3.normal.y, v3.normal.z, 0.0f}
+        );
+
+        vec3_t normals[3] = {
+            vec3_normalize((vec3_t){n1_4.x, n1_4.y, n1_4.z}),
+            vec3_normalize((vec3_t){n2_4.x, n2_4.y, n2_4.z}),
+            vec3_normalize((vec3_t){n3_4.x, n3_4.y, n3_4.z})
+        };
+
+        vec3_t colors[3] = {
+            {0.1f, 0.1f, 0.1f},
+            {0.1f, 0.1f, 0.1f},
+            {0.1f, 0.1f, 0.1f}
+        };
+
+        for(int i = 0; i < light_count; i++) {
+            light_t light = lights[i];
+
+            if(light.type == LIGHT_DIRECTIONAL) {
+                vec3_t dir = vec3_normalize(vec3_negate(light.dir.dir));
+
+                float lr = ((light.color >> 24) & 0xFF) / 255.0f;
+                float lg = ((light.color >> 16) & 0xFF) / 255.0f;
+                float lb = (light.color >> 8 & 0xFF) / 255.0f;
+
+                for(int j = 0; j < 3; j++) {
+                    float ndotl = fmaxf(
+                        0.0f,
+                        vec3_dot(normals[j], dir)
+                    );
+
+                    colors[j].x += lr * ndotl;
+                    colors[j].y += lg * ndotl;
+                    colors[j].z += lb * ndotl;
+                }
+            }
+        }
+
+        for(int j = 0; j < 3; j++) {
+            colors[j].x = fminf(colors[j].x, 1.0f);
+            colors[j].y = fminf(colors[j].y, 1.0f);
+            colors[j].z = fminf(colors[j].z, 1.0f);
+        }
+
         for(int y = min_y; y <= max_y; y++) {
             for(int x = min_x; x <= max_x; x++) {
                 float px = x + 0.5f;
                 float py = y + 0.5f;
 
-                float w1 = (p3.x - p2.x) * (py - p2.y) - (p3.y - p2.y) * (px - p2.x);
-                float w2 = (p1.x - p3.x) * (py - p3.y) - (p1.y - p3.y) * (px - p3.x);
-                float w3 = (p2.x - p1.x) * (py - p1.y) - (p2.y - p1.y) * (px - p1.x);
+                float w1 = (
+                    (p3.x - p2.x) * (py - p2.y) -
+                    (p3.y - p2.y) * (px - p2.x)
+                ) / area;
 
-                if(w1 > 0.0f || w2 > 0.0f || w3 > 0.0f) continue;
+                float w2 = (
+                    (p1.x - p3.x) * (py - p3.y) -
+                    (p1.y - p3.y) * (px - p3.x)
+                ) / area;
 
-                renderer_draw_pixel(renderer, x, y, COLOR_WHITE);
+                float w3 = 1.0f - w1 - w2;
+
+                if(w1 < 0.0f || w2 < 0.0f || w3 < 0.0f)
+                    continue;
+
+                float r = w1 * colors[0].x
+                        + w2 * colors[1].x
+                        + w3 * colors[2].x;
+
+                float g = w1 * colors[0].y
+                        + w2 * colors[1].y
+                        + w3 * colors[2].y;
+
+                float b = w1 * colors[0].z
+                        + w2 * colors[1].z
+                        + w3 * colors[2].z;
+
+                r = fminf(fmaxf(r, 0.0f), 1.0f);
+                g = fminf(fmaxf(g, 0.0f), 1.0f);
+                b = fminf(fmaxf(b, 0.0f), 1.0f);
+
+                uint32_t color =
+                    ((uint32_t)(r * 255.0f + 0.5f) << 24) |
+                    ((uint32_t)(g * 255.0f + 0.5f) << 16) |
+                    ((uint32_t)(b * 255.0f + 0.5f) <<  8) |
+                    0xFF;
+
+                renderer_draw_pixel(renderer, x, y, color);
             }
         }
     }

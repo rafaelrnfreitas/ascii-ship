@@ -6,6 +6,7 @@
 #include "graphics/mesh.h"
 #include "graphics/camera.h"
 #include "math/mat4.h"
+#include "graphics/light.h"
 
 typedef struct {
     SDL_Window* window;
@@ -20,7 +21,14 @@ int renderer_init(renderer_t* r, int width, int height);
 void renderer_draw(renderer_t* r);
 void renderer_clear(renderer_t* r);
 void renderer_draw_pixel(renderer_t* r, int x, int y, uint32_t color); 
-void renderer_draw_mesh(renderer_t* r, mesh_t* mesh, mat4_t model, camera_t cam);
+void renderer_draw_mesh(
+    renderer_t* renderer, 
+    mesh_t* mesh, 
+    mat4_t model, 
+    camera_t cam, 
+    light_t* lights, 
+    int light_count
+);
 void renderer_destroy(renderer_t* r);
 
 #endif

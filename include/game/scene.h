@@ -5,12 +5,15 @@
 #include "graphics/camera.h"
 #include "game/player.h"
 #include "engine/renderer.h"
+#include "graphics/light.h"
 
 #define MAX_MESHES 64
 
 typedef struct {
     camera_t camera;
     player_t player;
+    light_t lights[MAX_LIGHTS];
+    int light_count;
 } scene_t;
 
 int scene_init(scene_t* scene);
