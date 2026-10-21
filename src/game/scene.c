@@ -6,7 +6,7 @@
 int scene_init(scene_t* scene) {
     if(!scene) return 1;
 
-    scene->camera = (camera_t){{0, -10, 0}, {0, 0, 0}};
+    scene->camera = (camera_t){{0, -20, 0}, {0, 0, 0}};
     player_init(&scene->player);
     scene->lights[scene->light_count++] = light_create_dir(
                 (vec3_t){0.5f, 0.5f, -1}, 0xFFFFFFFFU, 1.0f
