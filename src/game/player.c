@@ -67,10 +67,10 @@ static void player_move(player_t* player, float dt) {
     float horizontal = 0; 
     float vertical = 0;
 
-    if(input_check(INPUT_KEY_D)) horizontal++;
-    if(input_check(INPUT_KEY_A)) horizontal--;
-    if(input_check(INPUT_KEY_W)) vertical++;
-    if(input_check(INPUT_KEY_S)) vertical--;
+    if(key_down(SDL_SCANCODE_D)) horizontal++;
+    if(key_down(SDL_SCANCODE_A)) horizontal--;
+    if(key_down(SDL_SCANCODE_W)) vertical++;
+    if(key_down(SDL_SCANCODE_S)) vertical--;
 
     vec3_t dir =(vec3_t){
         horizontal,

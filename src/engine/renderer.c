@@ -1,75 +1,82 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <string.h>
 #include "engine/renderer.h"
 #include "graphics/mesh.h"
 
-#define CURSOR_RESET "\033[H"
-#define CURSOR_HIDE "\033[?25l"
-#define CURSOR_SHOW "\033[?25h"
-#define SCREEN_CLEAR "\033[2J"
+#define COLOR_BLACK 0x000000FFU
+#define COLOR_WHITE 0xFFFFFFFFU
 
-int renderer_init(renderer_t* renderer, int width, int height) {
-    if(!renderer || width <= 0 || height <= 0) return 1;
+int renderer_init(renderer_t* r, int width, int height) {
+    if(!r || width <= 0 || height <= 0) return 1;
 
-    renderer->width = width;
-    renderer->height = height;
-    renderer->screen_buffer = malloc((size_t)width * (size_t)height);
+    memset(r, 0, sizeof(renderer_t));
+    r->width = width;
+    r->height = height;
+    
+    if(!SDL_Init(SDL_INIT_VIDEO)) {
+        SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
+        return 1;
+    }
 
-    if(!renderer->screen_buffer) return 1;
+    if(!SDL_CreateWindowAndRenderer("Game", width, height, SDL_WINDOW_RESIZABLE, &r->window, &r->sdl_renderer)) {
+        SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
+        renderer_destroy(r);
+        return 1;
+    }
 
-    fputs(SCREEN_CLEAR CURSOR_RESET CURSOR_HIDE, stdout);
-    fflush(stdout);
-    renderer_clear(renderer);
+    SDL_SetRenderLogicalPresentation(r->sdl_renderer, width, height, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+
+    r->texture = SDL_CreateTexture(
+        r->sdl_renderer, 
+        SDL_PIXELFORMAT_RGBA8888, 
+        SDL_TEXTUREACCESS_STREAMING, 
+        width, 
+        height
+    );
+    if(!r->texture) {
+        SDL_Log("Couldn't create texture: %s", SDL_GetError());
+        return 1;
+    }
+
+    r->pixels = malloc((size_t)width * (size_t)height * sizeof(uint32_t));
+    if(!r->pixels) {
+        renderer_destroy(r);
+        return 1;
+    }
+
+    renderer_clear(r);
     return 0;
 }
 
-void renderer_draw(renderer_t* renderer) {
-    if(!renderer || !renderer->screen_buffer) return;
-
-    size_t w = (size_t)renderer->width;
-    size_t h = (size_t)renderer->height;
-    size_t cap = sizeof(CURSOR_RESET) + h * (w + 2);
-
-    char* frame = malloc(cap);
-    if(!frame) return;
-
-    size_t n = 0;
-    memcpy(frame, CURSOR_RESET, sizeof(CURSOR_RESET) - 1);
-    n += sizeof(CURSOR_RESET) - 1;
-
-    for(size_t y = 0; y < h; y++) {
-        memcpy(frame + n, renderer->screen_buffer + y * w, w);
-        n += w;
-        if(y + 1 < h) {
-            frame[n++] = '\r';
-            frame[n++] = '\n';
-        }
-    }
-
-    fwrite(frame, 1, n, stdout);
-    fflush(stdout);
-    free(frame);
+void renderer_draw(renderer_t* r) {
+    if(!r || !r->pixels) return;
+    
+    SDL_UpdateTexture(r->texture, NULL, r->pixels, r->width * sizeof(uint32_t));
+    SDL_SetRenderDrawColor(r->sdl_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE); 
+    SDL_RenderClear(r->sdl_renderer);
+    SDL_RenderTexture(r->sdl_renderer, r->texture, NULL, NULL);
+    SDL_RenderPresent(r->sdl_renderer);
 }
 
-void renderer_clear(renderer_t* renderer) {
-    if (!renderer || !renderer->screen_buffer) return;
+void renderer_clear(renderer_t* r) {
+    if(!r || !r->pixels) return;
 
-    for (int i = 0; i < renderer->width * renderer->height; i++) {
-        renderer->screen_buffer[i] = ' ';
+    size_t count = (size_t)r->width * (size_t)r->height;
+    for(size_t i = 0; i < count; i++) {
+        r->pixels[i] = COLOR_BLACK;
     }
 }
 
-void renderer_draw_char(renderer_t* renderer, int x, int y, char c) {
-    if (!renderer || !renderer->screen_buffer) return;
+void renderer_draw_pixel(renderer_t* r, int x, int y, uint32_t color) {
+    if(!r || !r->pixels) return;
 
-    if (x >= 0 && x < renderer->width && y >= 0 && y < renderer->height) {
-        renderer->screen_buffer[y * renderer->width + x] = c;
+    if(x >= 0 && x < r->width && y >= 0 && y < r->height) {
+        r->pixels[y * r->width + x] = color;
     }
 }
 
-vec3_t proj_vert(vertex_t v, mat4_t mvp, int width, int height) {
+static vec3_t proj_vert(vertex_t v, mat4_t mvp, int width, int height) {
     vec4_t p = (vec4_t){v.pos.x, v.pos.y, v.pos.z, 1.0f};
     p = mat4_mul_vec4(mvp, p);
 
@@ -140,18 +147,18 @@ void renderer_draw_mesh(renderer_t* renderer, mesh_t* mesh, mat4_t model, camera
 
                 if(w1 > 0.0f || w2 > 0.0f || w3 > 0.0f) continue;
 
-                renderer_draw_char(renderer, x, y, '*');
+                renderer_draw_pixel(renderer, x, y, COLOR_WHITE);
             }
         }
     }
 }
 
-void renderer_destroy(renderer_t* renderer) {
-    if(!renderer) return;
-
-    free(renderer->screen_buffer);
-    renderer->screen_buffer = NULL;
-
-    fputs(CURSOR_SHOW, stdout);
-    fflush(stdout);
+void renderer_destroy(renderer_t* r) {
+    if(!r) return;
+    free(r->pixels);
+    if(r->texture) SDL_DestroyTexture(r->texture);
+    if(r->sdl_renderer) SDL_DestroyRenderer(r->sdl_renderer);
+    if(r->window) SDL_DestroyWindow(r->window);
+    *r = (renderer_t){0};
+    SDL_Quit();
 }
