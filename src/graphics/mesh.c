@@ -3,11 +3,11 @@
 #include "graphics/mesh.h"
 
 mesh_t* mesh_create(
-    vertex_t* verts,
+    const vertex_t* verts,
     size_t vert_count,
-    int* indices,
+    const int* indices,
     size_t index_count,
-    uint32_t* colors
+    const uint32_t* colors
 ) {
     if(!verts || !indices || vert_count == 0 || index_count == 0) return NULL;
 

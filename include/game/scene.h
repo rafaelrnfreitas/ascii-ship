@@ -4,14 +4,18 @@
 #include "graphics/mesh.h"
 #include "graphics/camera.h"
 #include "game/player.h"
+#include "game/enemy.h"
 #include "engine/renderer.h"
 #include "graphics/light.h"
 
 #define MAX_MESHES 64
+#define MAX_ENEMIES 64
 
 typedef struct {
     camera_t camera;
     player_t player;
+    enemy_t enemies[MAX_ENEMIES];
+    int enemy_count;
     light_t lights[MAX_LIGHTS];
     int light_count;
 } scene_t;

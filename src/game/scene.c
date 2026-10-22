@@ -11,6 +11,11 @@ int scene_init(scene_t* scene) {
 
     scene->camera = (camera_t){{0, -20, 0}, {0, 0, 0}};
     player_init(&scene->player);
+
+    if(enemy_init(&scene->enemies[scene->enemy_count], (vec3_t){4, 10, 2}) == 0) {
+        scene->enemy_count++;
+    }
+
     scene->lights[scene->light_count++] = light_create_dir(
                 (vec3_t){0.5f, 0.5f, -1}, 0xFFFFFFFFU, 1.0f
             );
@@ -20,13 +25,25 @@ int scene_init(scene_t* scene) {
 
 void scene_update(scene_t* scene, float dt) {
     player_update(&scene->player, dt);
+
+    for(int i = 0; i < scene->enemy_count; i++) {
+        enemy_update(&scene->enemies[i], dt);
+    }
 }
 
 void scene_draw(scene_t* scene, renderer_t* renderer) {
     player_draw(&scene->player, renderer, scene->camera, scene->lights, scene->light_count);
+
+    for(int i = 0; i < scene->enemy_count; i++) {
+        enemy_draw(&scene->enemies[i], renderer, scene->camera, scene->lights, scene->light_count);
+    }
 }
 
 void scene_destroy(scene_t* scene) {
     if(!scene) return;
     player_destroy(&scene->player);
+
+    for(int i = 0; i < scene->enemy_count; i++) {
+        enemy_destroy(&scene->enemies[i]);
+    }
 }
