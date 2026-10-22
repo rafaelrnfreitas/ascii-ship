@@ -17,7 +17,7 @@ typedef struct {
     int height;
 } renderer_t;
 
-int renderer_init(renderer_t* r, int width, int height);
+int renderer_init(renderer_t* r, int width, int height, int win_w, int win_h);
 void renderer_draw(renderer_t* r);
 void renderer_clear(renderer_t* r);
 void renderer_draw_pixel(renderer_t* r, int x, int y, uint32_t color); 

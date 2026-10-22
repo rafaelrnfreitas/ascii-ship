@@ -12,7 +12,7 @@
 int engine_init(engine_t* engine) {
     if(!engine) return 1;
    
-    if(renderer_init(&engine->renderer, 1280, 720) != 0)
+    if(renderer_init(&engine->renderer, 384, 216, 1280, 720) != 0)
         return 1;
     if(scene_init(&engine->scene) != 0) {
         renderer_destroy(&engine->renderer);

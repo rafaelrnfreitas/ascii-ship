@@ -10,37 +10,43 @@
 #define COLOR_BLACK 0x000000FFU
 #define COLOR_WHITE 0xFFFFFFFFU
 
-int renderer_init(renderer_t* r, int width, int height) {
-    if(!r || width <= 0 || height <= 0) return 1;
+int renderer_init(renderer_t* r, int width, int height, int win_w, int win_h) {
+    if(!r || width <= 0 || height <= 0 || win_w <= 0 || win_h <= 0) return 1;
 
     memset(r, 0, sizeof(renderer_t));
     r->width = width;
     r->height = height;
-    
+
     if(!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
         return 1;
     }
 
-    if(!SDL_CreateWindowAndRenderer("Game", width, height, SDL_WINDOW_RESIZABLE, &r->window, &r->sdl_renderer)) {
+    if(!SDL_CreateWindowAndRenderer("Game", win_w, win_h, SDL_WINDOW_RESIZABLE, &r->window, &r->sdl_renderer)) {
         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
         renderer_destroy(r);
         return 1;
     }
 
-    SDL_SetRenderLogicalPresentation(r->sdl_renderer, width, height, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+    SDL_SetRenderLogicalPresentation(
+        r->sdl_renderer, width, height,
+        SDL_LOGICAL_PRESENTATION_INTEGER_SCALE
+    );
 
     r->texture = SDL_CreateTexture(
-        r->sdl_renderer, 
-        SDL_PIXELFORMAT_RGBA8888, 
-        SDL_TEXTUREACCESS_STREAMING, 
+        r->sdl_renderer,
+        SDL_PIXELFORMAT_RGBA8888,
+        SDL_TEXTUREACCESS_STREAMING,
         width, 
         height
     );
     if(!r->texture) {
         SDL_Log("Couldn't create texture: %s", SDL_GetError());
+        renderer_destroy(r);
         return 1;
     }
+
+    SDL_SetTextureScaleMode(r->texture, SDL_SCALEMODE_NEAREST);
 
     r->pixels = malloc((size_t)width * (size_t)height * sizeof(uint32_t));
     if(!r->pixels) {
