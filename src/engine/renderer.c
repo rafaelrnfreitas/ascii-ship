@@ -49,7 +49,8 @@ int renderer_init(renderer_t* r, int width, int height, int win_w, int win_h) {
     SDL_SetTextureScaleMode(r->texture, SDL_SCALEMODE_NEAREST);
 
     r->pixels = malloc((size_t)width * (size_t)height * sizeof(uint32_t));
-    if(!r->pixels) {
+    r->depth_buffer = malloc((size_t)width * (size_t)height * sizeof(float));
+    if(!r->pixels || !r->depth_buffer) {
         renderer_destroy(r);
         return 1;
     }
@@ -74,6 +75,7 @@ void renderer_clear(renderer_t* r) {
     size_t count = (size_t)r->width * (size_t)r->height;
     for(size_t i = 0; i < count; i++) {
         r->pixels[i] = COLOR_BLACK;
+        r->depth_buffer[i] = 1.0f;
     }
 }
 
@@ -228,6 +230,14 @@ void renderer_draw_mesh(
                 if(w1 < 0.0f || w2 < 0.0f || w3 < 0.0f)
                     continue;
 
+                float depth = w1 * p1.z + w2 * p2.z + w3 * p3.z;
+                int idx = y * renderer->width + x;
+
+                if(depth >= renderer->depth_buffer[idx])
+                    continue;
+
+                renderer->depth_buffer[idx] = depth;
+
                 float r = w1 * colors[0].x
                         + w2 * colors[1].x
                         + w3 * colors[2].x;
@@ -259,6 +269,7 @@ void renderer_draw_mesh(
 void renderer_destroy(renderer_t* r) {
     if(!r) return;
     free(r->pixels);
+    free(r->depth_buffer);
     if(r->texture) SDL_DestroyTexture(r->texture);
     if(r->sdl_renderer) SDL_DestroyRenderer(r->sdl_renderer);
     if(r->window) SDL_DestroyWindow(r->window);

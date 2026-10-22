@@ -13,6 +13,7 @@ typedef struct {
     SDL_Renderer* sdl_renderer;
     SDL_Texture* texture;
     uint32_t* pixels;
+    float* depth_buffer;
     int width;
     int height;
 } renderer_t;
