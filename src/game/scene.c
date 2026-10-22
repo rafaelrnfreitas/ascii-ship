@@ -1,3 +1,4 @@
+#include <string.h>
 #include "graphics/mesh.h"
 #include "math/mat4.h"
 #include "engine/input.h"
@@ -5,6 +6,8 @@
 
 int scene_init(scene_t* scene) {
     if(!scene) return 1;
+
+    memset(scene, 0, sizeof(scene_t));
 
     scene->camera = (camera_t){{0, -20, 0}, {0, 0, 0}};
     player_init(&scene->player);
