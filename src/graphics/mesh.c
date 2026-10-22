@@ -6,7 +6,8 @@ mesh_t* mesh_create(
     vertex_t* verts,
     size_t vert_count,
     int* indices,
-    size_t index_count
+    size_t index_count,
+    uint32_t* colors
 ) {
     if(!verts || !indices || vert_count == 0 || index_count == 0) return NULL;
 
@@ -29,6 +30,20 @@ mesh_t* mesh_create(
         return NULL;
     }
 
+    if(colors) {
+        size_t colors_size = (index_count / 3) * sizeof(uint32_t);
+
+        mesh->colors = malloc(colors_size);
+        if(!mesh->colors) {
+            free(mesh->indices);
+            free(mesh->verts);
+            free(mesh);
+            return NULL;
+        }
+
+        memcpy(mesh->colors, colors, colors_size);
+    }
+
     memcpy(mesh->verts, verts, verts_size);
     memcpy(mesh->indices, indices, indices_size);
 
@@ -43,5 +58,6 @@ void mesh_destroy(mesh_t* mesh) {
 
     free(mesh->verts);
     free(mesh->indices);
+    free(mesh->colors);
     free(mesh);
 }

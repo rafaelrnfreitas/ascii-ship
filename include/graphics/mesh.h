@@ -2,6 +2,7 @@
 #define MESH_H
 
 #include <stddef.h>
+#include <stdint.h>
 #include "math/vec3.h"
 
 typedef struct {
@@ -14,13 +15,15 @@ typedef struct {
     size_t vert_count;
     int* indices;
     size_t index_count;
+    uint32_t* colors;
 } mesh_t;
 
 mesh_t* mesh_create(
     vertex_t* verts,
     size_t vert_count,
     int* indices,
-    size_t index_count
+    size_t index_count,
+    uint32_t* colors
 );
 
 void mesh_destroy(mesh_t* mesh);

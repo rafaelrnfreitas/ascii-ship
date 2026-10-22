@@ -204,10 +204,16 @@ void renderer_draw_mesh(
             }
         }
 
+        uint32_t tri_color = mesh->colors ? mesh->colors[i / 3] : COLOR_WHITE;
+
+        float tr = ((tri_color >> 24) & 0xFF) / 255.0f;
+        float tg = ((tri_color >> 16) & 0xFF) / 255.0f;
+        float tb = ((tri_color >> 8) & 0xFF) / 255.0f;
+
         for(int j = 0; j < 3; j++) {
-            colors[j].x = fminf(colors[j].x, 1.0f);
-            colors[j].y = fminf(colors[j].y, 1.0f);
-            colors[j].z = fminf(colors[j].z, 1.0f);
+            colors[j].x = fminf(colors[j].x, 1.0f) * tr;
+            colors[j].y = fminf(colors[j].y, 1.0f) * tg;
+            colors[j].z = fminf(colors[j].z, 1.0f) * tb;
         }
 
         for(int y = min_y; y <= max_y; y++) {
