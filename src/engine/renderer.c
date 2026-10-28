@@ -114,10 +114,10 @@ void renderer_draw_mesh(
 
     mat4_t view = mat4_lookat(cam.pos, cam.target);
     mat4_t proj = mat4_perspective(
-        0.5f, 
+        cam.fov, 
         (float)renderer->width / (float)renderer->height, 
-        1, 
-        100 
+        cam.near, 
+        cam.far
     );
     mat4_t mvp = mat4_mul(proj, mat4_mul(view, model));
 

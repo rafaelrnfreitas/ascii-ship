@@ -8,11 +8,13 @@
 #include "graphics/light.h"
 
 #define MAX_MESHES 64
+#define NUM_STARS 256
 
 typedef struct {
     camera_t camera;
     player_t player;
     light_t lights[MAX_LIGHTS];
+    vec3_t stars[NUM_STARS];
     int light_count;
 } scene_t;
 
