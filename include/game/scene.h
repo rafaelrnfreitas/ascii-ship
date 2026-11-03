@@ -4,6 +4,7 @@
 #include "graphics/mesh.h"
 #include "graphics/camera.h"
 #include "game/player.h"
+#include "game/enemy.h"
 #include "engine/renderer.h"
 #include "graphics/light.h"
 
@@ -13,6 +14,7 @@
 typedef struct {
     camera_t camera;
     player_t player;
+    enemy_t enemy;
     light_t lights[MAX_LIGHTS];
     vec3_t stars[NUM_STARS];
     int light_count;

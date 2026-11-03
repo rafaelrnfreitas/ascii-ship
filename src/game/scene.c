@@ -29,6 +29,7 @@ int scene_init(scene_t* scene) {
         .fov = 1.0f
     };
     player_init(&scene->player);
+    enemy_init(&scene->enemy, (vec3_t){0, 10, 0}, scene->player.mesh);
     scene->lights[scene->light_count++] = light_create_dir(
                 (vec3_t){0.5f, 0.5f, -1}, 0xFFFFFFFFU, 1.0f
             );
@@ -75,9 +76,11 @@ void scene_draw(scene_t* scene, renderer_t* renderer) {
     }
 
     player_draw(&scene->player, renderer, scene->camera, scene->lights, scene->light_count);
+    enemy_draw(&scene->enemy, renderer, scene->camera, scene->lights, scene->light_count);
 }
 
 void scene_destroy(scene_t* scene) {
     if(!scene) return;
+    enemy_destroy(&scene->enemy);
     player_destroy(&scene->player);
 }

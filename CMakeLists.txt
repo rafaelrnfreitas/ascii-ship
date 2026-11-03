@@ -13,6 +13,7 @@ add_executable(game
     src/engine/input.c
     src/engine/renderer.c
     src/game/player.c
+    src/game/enemy.c
     src/game/scene.c
     src/graphics/mesh.c
     src/math/mat4.c
