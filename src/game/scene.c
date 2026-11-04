@@ -5,6 +5,7 @@
 #include "math/mat4.h"
 #include "engine/input.h"
 #include "game/scene.h"
+#include "graphics/meshes.h"
 
 static float random_range(float min, float max) {
     return min + (float)rand() / (float)RAND_MAX * (max - min);
@@ -18,6 +19,8 @@ static void respawn_star(scene_t* scene, vec3_t* star) {
 
 int scene_init(scene_t* scene) {
     if(!scene) return 1;
+    
+    meshes_init();
 
     memset(scene, 0, sizeof(scene_t));
 
@@ -28,11 +31,13 @@ int scene_init(scene_t* scene) {
         .far = 100.0f,
         .fov = 1.0f
     };
+
     player_init(&scene->player);
-    enemy_init(&scene->enemy, (vec3_t){0, 10, 0}, scene->player.mesh);
+    enemy_init(&scene->enemy, (vec3_t){0, 10, 0});
+
     scene->lights[scene->light_count++] = light_create_dir(
-                (vec3_t){0.5f, 0.5f, -1}, 0xFFFFFFFFU, 1.0f
-            );
+        (vec3_t){0.5f, 0.5f, -1}, 0xFFFFFFFFU, 1.0f
+    );
 
     for(int i = 0; i < NUM_STARS; i++) {
         respawn_star(scene, &scene->stars[i]);
@@ -81,6 +86,9 @@ void scene_draw(scene_t* scene, renderer_t* renderer) {
 
 void scene_destroy(scene_t* scene) {
     if(!scene) return;
+    
+    meshes_free();
+
     enemy_destroy(&scene->enemy);
     player_destroy(&scene->player);
 }

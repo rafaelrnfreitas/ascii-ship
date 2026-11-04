@@ -14,7 +14,7 @@ typedef struct {
     mesh_t* mesh;
 } enemy_t;
 
-int enemy_init(enemy_t* enemy, vec3_t pos, const mesh_t* src);
+int enemy_init(enemy_t* enemy, vec3_t pos);
 void enemy_draw(enemy_t* enemy, renderer_t* renderer, camera_t camera, light_t* lights, int light_count);
 void enemy_destroy(enemy_t* enemy);
 

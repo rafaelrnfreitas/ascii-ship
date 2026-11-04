@@ -1,5 +1,6 @@
 #include "game/enemy.h"
 #include "math/mat4.h"
+#include "graphics/meshes.h"
 
 #define PI 3.14159265f
 #define ENEMY_RED 0xE53935FF
@@ -7,10 +8,16 @@
 
 static const int WINDOW_TRIS[] = {2, 38};
 
-int enemy_init(enemy_t* enemy, vec3_t pos, const mesh_t* src) {
+int enemy_init(enemy_t* enemy, vec3_t pos) {
+    mesh_t* src = mesh_ship;
+
     if(!src || !src->colors) return 1;
 
-    mesh_t* mesh = mesh_create(src->verts, src->vert_count, src->indices, src->index_count, src->colors);
+    mesh_t* mesh = mesh_create(
+        src->verts, src->vert_count,
+        src->indices, src->index_count,
+        src->colors
+    );
     if(!mesh) return 1;
 
     for(size_t i = 0; i < mesh->index_count / 3; i++) {
