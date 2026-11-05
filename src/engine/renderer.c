@@ -6,9 +6,7 @@
 #include "graphics/mesh.h"
 #include "graphics/light.h"
 #include "math/mat4.h"
-
-#define COLOR_BLACK 0x000000FFU
-#define COLOR_WHITE 0xFFFFFFFFU
+#include "graphics/color.h"
 
 int renderer_init(renderer_t* r, int width, int height, int win_w, int win_h) {
     if(!r || width <= 0 || height <= 0 || win_w <= 0 || win_h <= 0) return 1;

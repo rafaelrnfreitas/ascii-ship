@@ -1,12 +1,9 @@
 #include "game/enemy.h"
 #include "math/mat4.h"
 #include "graphics/meshes.h"
+#include "graphics/color.h"
 
 #define PI 3.14159265f
-#define ENEMY_RED 0xE53935FF
-#define ENEMY_CYAN 0x00FFFFFF
-
-static const int WINDOW_TRIS[] = {2, 38};
 
 int enemy_init(enemy_t* enemy, vec3_t pos) {
     mesh_t* src = mesh_ship;
@@ -21,12 +18,11 @@ int enemy_init(enemy_t* enemy, vec3_t pos) {
     if(!mesh) return 1;
 
     for(size_t i = 0; i < mesh->index_count / 3; i++) {
-        mesh->colors[i] = ENEMY_RED;
+        mesh->colors[i] = COLOR_RED;
     }
 
-    for(size_t i = 0; i < sizeof(WINDOW_TRIS) / sizeof(WINDOW_TRIS[0]); i++) {
-        mesh->colors[WINDOW_TRIS[i]] = ENEMY_CYAN;
-    }
+    mesh->colors[2] = COLOR_CYAN;
+    mesh->colors[38] = COLOR_CYAN;
 
     enemy->pos = pos;
     enemy->vel = (vec3_t){0, 0, 0};

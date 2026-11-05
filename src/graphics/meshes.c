@@ -1,9 +1,6 @@
 #include "graphics/meshes.h"
 #include "graphics/mesh.h"
-
-#define SHIP_WHITE 0xFFFFFFFF
-#define SHIP_YELLOW 0xFFC83DFF
-#define SHIP_BLUE 0x3D7BFFFF
+#include "graphics/color.h"
 
 mesh_t* mesh_ship = NULL;
 
@@ -193,55 +190,55 @@ static int ship_indices[] = {
 };
 
 static uint32_t colors[] = {
-    SHIP_WHITE, // 0
-    SHIP_WHITE, // 1
-    SHIP_WHITE, // 2
-    SHIP_BLUE, // 3
-    SHIP_BLUE, // 4
-    SHIP_WHITE, // 5
-    SHIP_WHITE, // 6
-    SHIP_WHITE, // 7
-    SHIP_WHITE, // 8
-    SHIP_WHITE, // 9
-    SHIP_WHITE, // 10
-    SHIP_BLUE, // 11
-    SHIP_BLUE, // 12
-    SHIP_WHITE, // 13
-    SHIP_WHITE, // 14
-    SHIP_WHITE, // 15
-    SHIP_YELLOW, // 16
-    SHIP_YELLOW, // 17
-    SHIP_WHITE, // 18
-    SHIP_WHITE, // 19
-    SHIP_WHITE, // 20
-    SHIP_WHITE, // 21
-    SHIP_WHITE, // 22
-    SHIP_WHITE, // 23
-    SHIP_WHITE, // 24
-    SHIP_WHITE, // 25
-    SHIP_WHITE, // 26
-    SHIP_WHITE, // 27
-    SHIP_WHITE, // 28
-    SHIP_WHITE, // 29
-    SHIP_WHITE, // 30
-    SHIP_WHITE, // 31
-    SHIP_WHITE, // 32
-    SHIP_WHITE, // 33
-    SHIP_WHITE, // 34
-    SHIP_BLUE, // 35
-    SHIP_WHITE, // 36
-    SHIP_WHITE, // 37
-    SHIP_WHITE, // 38
-    SHIP_WHITE, // 39
-    SHIP_WHITE, // 40
-    SHIP_BLUE, // 41
-    SHIP_YELLOW, // 42
-    SHIP_YELLOW, // 43
-    SHIP_WHITE, // 44
-    SHIP_WHITE, // 45
-    SHIP_WHITE, // 46
-    SHIP_WHITE, // 47
-    SHIP_WHITE, // 48
+    COLOR_WHITE, // 0
+    COLOR_WHITE, // 1
+    COLOR_WHITE, // 2
+    COLOR_BLUE, // 3
+    COLOR_BLUE, // 4
+    COLOR_WHITE, // 5
+    COLOR_WHITE, // 6
+    COLOR_WHITE, // 7
+    COLOR_WHITE, // 8
+    COLOR_WHITE, // 9
+    COLOR_WHITE, // 10
+    COLOR_BLUE, // 11
+    COLOR_BLUE, // 12
+    COLOR_WHITE, // 13
+    COLOR_WHITE, // 14
+    COLOR_WHITE, // 15
+    COLOR_YELLOW, // 16
+    COLOR_YELLOW, // 17
+    COLOR_WHITE, // 18
+    COLOR_WHITE, // 19
+    COLOR_WHITE, // 20
+    COLOR_WHITE, // 21
+    COLOR_WHITE, // 22
+    COLOR_WHITE, // 23
+    COLOR_WHITE, // 24
+    COLOR_WHITE, // 25
+    COLOR_WHITE, // 26
+    COLOR_WHITE, // 27
+    COLOR_WHITE, // 28
+    COLOR_WHITE, // 29
+    COLOR_WHITE, // 30
+    COLOR_WHITE, // 31
+    COLOR_WHITE, // 32
+    COLOR_WHITE, // 33
+    COLOR_WHITE, // 34
+    COLOR_BLUE, // 35
+    COLOR_WHITE, // 36
+    COLOR_WHITE, // 37
+    COLOR_WHITE, // 38
+    COLOR_WHITE, // 39
+    COLOR_WHITE, // 40
+    COLOR_BLUE, // 41
+    COLOR_YELLOW, // 42
+    COLOR_YELLOW, // 43
+    COLOR_WHITE, // 44
+    COLOR_WHITE, // 45
+    COLOR_WHITE, // 46
+    COLOR_WHITE, // 47
+    COLOR_WHITE, // 48
 };
 
 int meshes_init() {
