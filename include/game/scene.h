@@ -5,11 +5,13 @@
 #include "graphics/camera.h"
 #include "game/player.h"
 #include "game/enemy.h"
+#include "game/laser.h"
 #include "engine/renderer.h"
 #include "graphics/light.h"
 
 #define MAX_MESHES 64
 #define NUM_STARS 256
+#define MAX_LASERS 32
 
 typedef struct {
     camera_t camera;
@@ -17,6 +19,7 @@ typedef struct {
     enemy_t enemy;
     light_t lights[MAX_LIGHTS];
     vec3_t stars[NUM_STARS];
+    laser_t lasers[MAX_LASERS];
     int light_count;
 } scene_t;
 

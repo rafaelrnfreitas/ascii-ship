@@ -8,12 +8,14 @@
 #define MAX_ROLL 0.5f
 #define MAX_PITCH 0.3f
 #define TILT_SPEED 8.0f
+#define FIRE_RATE 0.15f
 
 int player_init(player_t* player) {
     player->pos = (vec3_t){0, 0, 0};
     player->vel = (vec3_t){0, 0, 0};
     player->rot = (vec3_t){0, 0, 0};
     player->spd = 10.0f;
+    player->fire_cooldown = 0;
 
     player->mesh = mesh_ship;
 
@@ -42,6 +44,15 @@ static void player_move(player_t* player, float dt) {
 
 void player_update(player_t* player, float dt) {
     player_move(player, dt);
+
+    if(player->fire_cooldown > 0) player->fire_cooldown -= dt;
+}
+
+int player_fire(player_t* player) {
+    if(!key_down(SDL_SCANCODE_SPACE) || player->fire_cooldown > 0) return 0;
+
+    player->fire_cooldown = FIRE_RATE;
+    return 1;
 }
 
 void player_draw(player_t* player, renderer_t* renderer, camera_t camera, light_t* lights, int light_count) {
