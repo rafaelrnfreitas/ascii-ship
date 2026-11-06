@@ -3,6 +3,7 @@
 #include "graphics/color.h"
 
 mesh_t* mesh_ship = NULL;
+mesh_t* mesh_laser = NULL;
 
 static vertex_t verts_ship[] = {
     {{-0.282392f, 0.842117f, -0.163039f}, {0.000000f, 0.094800f, -0.995500f}},
@@ -241,6 +242,37 @@ static uint32_t colors[] = {
     COLOR_WHITE, // 48
 };
 
+static vertex_t verts_laser[] = {
+    {{0.000000f, 0.750000f, 0.000000f}, {0.000000f, 1.000000f, 0.000000f}},
+    {{0.000000f, -0.750000f, 0.000000f}, {0.000000f, -1.000000f, 0.000000f}},
+    {{0.100000f, 0.000000f, 0.000000f}, {1.000000f, 0.000000f, 0.000000f}},
+    {{-0.100000f, 0.000000f, 0.000000f}, {-1.000000f, 0.000000f, 0.000000f}},
+    {{0.000000f, 0.000000f, 0.100000f}, {0.000000f, 0.000000f, 1.000000f}},
+    {{0.000000f, 0.000000f, -0.100000f}, {0.000000f, 0.000000f, -1.000000f}},
+};
+
+static int laser_indices[] = {
+    0, 4, 2,
+    0, 3, 4,
+    0, 5, 3,
+    0, 2, 5,
+    1, 2, 4,
+    1, 4, 3,
+    1, 3, 5,
+    1, 5, 2,
+};
+
+static uint32_t laser_colors[] = {
+    COLOR_GREEN, // 1
+    COLOR_GREEN, // 2
+    COLOR_GREEN, // 3
+    COLOR_GREEN, // 4
+    COLOR_GREEN, // 5
+    COLOR_GREEN, // 6
+    COLOR_GREEN, // 7
+    COLOR_GREEN, // 8
+};
+
 int meshes_init() {
     mesh_ship = mesh_create(
         verts_ship,
@@ -252,10 +284,22 @@ int meshes_init() {
 
     if(!mesh_ship) return 1;
 
+    mesh_laser = mesh_create(
+        verts_laser,
+        sizeof(verts_laser) / sizeof(verts_laser[0]),
+        laser_indices,
+        sizeof(laser_indices) / sizeof(laser_indices[0]),
+        laser_colors
+    );
+
+    if(!mesh_laser) return 1;
+
     return 0;
 }
 
 void meshes_free() {
     mesh_destroy(mesh_ship);
     mesh_ship = NULL;
+    mesh_destroy(mesh_laser);
+    mesh_laser = NULL;
 }

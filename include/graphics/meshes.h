@@ -4,6 +4,7 @@
 #include "graphics/mesh.h"
 
 extern mesh_t* mesh_ship;
+extern mesh_t* mesh_laser;
 
 int meshes_init();
 void meshes_free();
