@@ -7,6 +7,8 @@
 #include "game/scene.h"
 #include "graphics/meshes.h"
 
+#define ENEMY_HIT_RADIUS 2.0f
+
 static float random_range(float min, float max) {
     return min + (float)rand() / (float)RAND_MAX * (max - min);
 }
@@ -64,6 +66,11 @@ void scene_update(scene_t* scene, float dt) {
 
     for(int i = 0; i < MAX_LASERS; i++) {
         laser_update(&scene->lasers[i], dt);
+
+        vec3_t diff = vec3_sub(scene->lasers[i].pos, scene->enemy.pos);
+        if(vec3_len_sq(diff) < ENEMY_HIT_RADIUS * ENEMY_HIT_RADIUS) {
+            scene->lasers[i].active = 0;
+        }
     }
 
     for(int i = 0; i < NUM_STARS; i++) {
