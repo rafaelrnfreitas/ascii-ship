@@ -50,3 +50,17 @@ vec3_t vec3_normalize(vec3_t v) {
 float vec3_len_sq(vec3_t v) {
     return v.x * v.x + v.y * v.y + v.z * v.z;
 }
+
+float vec3_dist(vec3_t a, vec3_t b) {
+    float dx = b.x - a.x;
+    float dy = b.y - a.y;
+    float dz = b.z - a.z;
+    return sqrtf(dx * dx + dy * dy + dz * dz);
+}
+
+float vec3_dist_sq(vec3_t a, vec3_t b) {
+    float dx = b.x - a.x;
+    float dy = b.y - a.y;
+    float dz = b.z - a.z;
+    return dx * dx + dy * dy + dz * dz;
+}

@@ -18,5 +18,7 @@ vec3_t vec3_cross(vec3_t a, vec3_t b);
 float vec3_len(vec3_t v);
 vec3_t vec3_normalize(vec3_t v);
 float vec3_len_sq(vec3_t v);
+float vec3_dist(vec3_t a, vec3_t b);
+float vec3_dist_sq(vec3_t a, vec3_t b);
 
 #endif
