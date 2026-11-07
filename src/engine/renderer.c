@@ -106,7 +106,8 @@ void renderer_draw_mesh(
         mat4_t model, 
         camera_t cam, 
         light_t* lights, 
-        int light_count
+        int light_count,
+        vec3_t ambient
     ) {
     if(!renderer || !mesh) return;
 
@@ -174,9 +175,9 @@ void renderer_draw_mesh(
         };
 
         vec3_t colors[3] = {
-            {0.1f, 0.1f, 0.1f},
-            {0.1f, 0.1f, 0.1f},
-            {0.1f, 0.1f, 0.1f}
+            ambient,
+            ambient,
+            ambient
         };
 
         for(int i = 0; i < light_count; i++) {

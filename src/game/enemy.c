@@ -33,14 +33,14 @@ int enemy_init(enemy_t* enemy, vec3_t pos) {
     return 0;
 }
 
-void enemy_draw(enemy_t* enemy, renderer_t* renderer, camera_t camera, light_t* lights, int light_count) {
+void enemy_draw(enemy_t* enemy, renderer_t* renderer, camera_t camera, light_t* lights, int light_count, vec3_t ambient) {
     mat4_t model = mat4_identity();
     model = mat4_mul(mat4_rotx(enemy->rot.x), model);
     model = mat4_mul(mat4_roty(enemy->rot.y), model);
     model = mat4_mul(mat4_rotz(enemy->rot.z), model);
     model = mat4_mul(mat4_translate(enemy->pos), model);
 
-    renderer_draw_mesh(renderer, enemy->mesh, model, camera, lights, light_count);
+    renderer_draw_mesh(renderer, enemy->mesh, model, camera, lights, light_count, ambient);
 }
 
 void enemy_destroy(enemy_t* enemy) {

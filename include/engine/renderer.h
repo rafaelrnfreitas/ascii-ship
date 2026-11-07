@@ -28,7 +28,8 @@ void renderer_draw_mesh(
     mat4_t model, 
     camera_t cam, 
     light_t* lights, 
-    int light_count
+    int light_count,
+    vec3_t ambient
 );
 void renderer_destroy(renderer_t* r);
 

@@ -7,8 +7,6 @@
 #include "game/scene.h"
 #include "graphics/meshes.h"
 
-#define ENEMY_HIT_RADIUS 2.0f
-
 static float random_range(float min, float max) {
     return min + (float)rand() / (float)RAND_MAX * (max - min);
 }
@@ -19,30 +17,19 @@ static void respawn_star(scene_t* scene, vec3_t* star) {
     star->z = scene->player.pos.z + random_range(-300, 300);
 }
 
-static void spawn_laser(scene_t* scene) {
-    vec3_t cannon = vec3_add(scene->player.pos, (vec3_t){0, 2.5f, -0.2f});
-
-    for(int i = 0; i < MAX_LASERS; i++) {
-        if(scene->lasers[i].active) continue;
-
-        laser_init(&scene->lasers[i], cannon);
-        return;
-    }
-}
-
 int scene_init(scene_t* scene) {
     if(!scene) return 1;
     
     meshes_init();
 
     memset(scene, 0, sizeof(scene_t));
-
+    scene->ambient = (vec3_t){0.2f, 0.2f, 0.2f};
     scene->camera = (camera_t){
         .pos = {0, -10, 0}, 
         .target = {0, 0, 0},
         .near = 1.0f,
         .far = 100.0f,
-        .fov = 1.0f
+        .fov = 1.0f,
     };
 
     player_init(&scene->player);
@@ -61,17 +48,6 @@ int scene_init(scene_t* scene) {
 
 void scene_update(scene_t* scene, float dt) {
     player_update(&scene->player, dt);
-
-    if(player_fire(&scene->player)) spawn_laser(scene);
-
-    for(int i = 0; i < MAX_LASERS; i++) {
-        laser_update(&scene->lasers[i], dt);
-
-        vec3_t diff = vec3_sub(scene->lasers[i].pos, scene->enemy.pos);
-        if(vec3_len_sq(diff) < ENEMY_HIT_RADIUS * ENEMY_HIT_RADIUS) {
-            scene->lasers[i].active = 0;
-        }
-    }
 
     for(int i = 0; i < NUM_STARS; i++) {
         scene->stars[i] = vec3_add(scene->stars[i], (vec3_t){0, -400.0 * dt, 0});
@@ -104,12 +80,8 @@ void scene_draw(scene_t* scene, renderer_t* renderer) {
         renderer_draw_pixel(renderer, (int)x, (int)y, 0xFFFFFFFFU);
     }
 
-    player_draw(&scene->player, renderer, scene->camera, scene->lights, scene->light_count);
-    enemy_draw(&scene->enemy, renderer, scene->camera, scene->lights, scene->light_count);
-
-    for(int i = 0; i < MAX_LASERS; i++) {
-        laser_draw(&scene->lasers[i], renderer, scene->camera, scene->lights, scene->light_count);
-    }
+    player_draw(&scene->player, renderer, scene->camera, scene->lights, scene->light_count, scene->ambient);
+    enemy_draw(&scene->enemy, renderer, scene->camera, scene->lights, scene->light_count, scene->ambient);
 }
 
 void scene_destroy(scene_t* scene) {

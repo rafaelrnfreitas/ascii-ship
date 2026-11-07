@@ -5,6 +5,9 @@
 #include "graphics/mesh.h"
 #include "engine/renderer.h"
 #include "graphics/light.h"
+#include "game/laser.h"
+
+#define MAX_LASERS 32
 
 typedef struct {
     vec3_t pos;
@@ -12,13 +15,13 @@ typedef struct {
     vec3_t rot;
     float spd;
     float fire_cooldown;
+    laser_t lasers[MAX_LASERS];
     mesh_t* mesh;
 } player_t;
 
 int player_init(player_t* player);
 void player_update(player_t* player, float dt);
-int player_fire(player_t* player);
-void player_draw(player_t* player, renderer_t* renderer, camera_t camera, light_t* lights, int light_count);
+void player_draw(player_t* player, renderer_t* renderer, camera_t camera, light_t* lights, int light_count, vec3_t ambient);
 void player_destroy(player_t* player);
 
 #endif

@@ -11,7 +11,6 @@
 
 #define MAX_MESHES 64
 #define NUM_STARS 256
-#define MAX_LASERS 32
 
 typedef struct {
     camera_t camera;
@@ -19,8 +18,8 @@ typedef struct {
     enemy_t enemy;
     light_t lights[MAX_LIGHTS];
     vec3_t stars[NUM_STARS];
-    laser_t lasers[MAX_LASERS];
     int light_count;
+    vec3_t ambient;
 } scene_t;
 
 int scene_init(scene_t* scene);

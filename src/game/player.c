@@ -45,23 +45,38 @@ static void player_move(player_t* player, float dt) {
 void player_update(player_t* player, float dt) {
     player_move(player, dt);
 
-    if(player->fire_cooldown > 0) player->fire_cooldown -= dt;
+    if(player->fire_cooldown > 0) {
+        player->fire_cooldown -= dt;
+    } else {
+        if(key_down(SDL_SCANCODE_SPACE)) {
+            player->fire_cooldown = FIRE_RATE;
+
+            vec3_t cannon = vec3_add(player->pos, (vec3_t){0, 2.5f, -0.2f});
+
+            for(int i = 0; i < MAX_LASERS; i++) {
+                if(player->lasers[i].active) continue;
+                laser_init(&player->lasers[i], cannon);
+                return;
+            }
+        }
+    }
+
+    for(int i = 0; i < MAX_LASERS; i++) {
+        laser_update(&player->lasers[i], dt);
+    }
 }
 
-int player_fire(player_t* player) {
-    if(!key_down(SDL_SCANCODE_SPACE) || player->fire_cooldown > 0) return 0;
-
-    player->fire_cooldown = FIRE_RATE;
-    return 1;
-}
-
-void player_draw(player_t* player, renderer_t* renderer, camera_t camera, light_t* lights, int light_count) {
+void player_draw(player_t* player, renderer_t* renderer, camera_t camera, light_t* lights, int light_count, vec3_t ambient) {
     mat4_t model = mat4_identity();   
     model = mat4_mul(mat4_rotx(player->rot.x), model);
     model = mat4_mul(mat4_roty(player->rot.y), model);
     model = mat4_mul(mat4_translate(player->pos), model);
 
-    renderer_draw_mesh(renderer, player->mesh, model, camera, lights, light_count);
+    renderer_draw_mesh(renderer, player->mesh, model, camera, lights, light_count, ambient);
+
+    for(int i = 0; i < MAX_LASERS; i++) {
+        laser_draw(&player->lasers[i], renderer, camera, NULL, 0);
+    }
 }
 
 void player_destroy(player_t* player) {

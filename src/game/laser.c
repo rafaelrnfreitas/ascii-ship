@@ -29,5 +29,5 @@ void laser_draw(laser_t* laser, renderer_t* renderer, camera_t camera, light_t* 
 
     mat4_t model = mat4_translate(laser->pos);
 
-    renderer_draw_mesh(renderer, laser->mesh, model, camera, lights, light_count);
+    renderer_draw_mesh(renderer, laser->mesh, model, camera, lights, light_count, (vec3_t){1.0f, 1.0f, 1.0f});
 }
