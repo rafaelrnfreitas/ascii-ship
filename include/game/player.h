@@ -6,6 +6,7 @@
 #include "engine/renderer.h"
 #include "graphics/light.h"
 #include "game/laser.h"
+#include "game/lives.h"
 
 typedef struct scene_s scene_t;
 
@@ -18,6 +19,7 @@ typedef struct {
     mesh_t* mesh;
     float radius;
     scene_t* scene;
+    lives_t lives;
 } player_t;
 
 int player_init(player_t* player, vec3_t pos, scene_t* scene);

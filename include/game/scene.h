@@ -34,5 +34,6 @@ int scene_init(scene_t* scene);
 void scene_update(scene_t* scene, float dt);
 void scene_draw(scene_t* scene, renderer_t* renderer);
 void scene_destroy(scene_t* scene);
+void scene_remove_enemy(scene_t* scene, int i);
 
 #endif

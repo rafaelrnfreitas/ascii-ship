@@ -24,6 +24,7 @@ int player_init(player_t* player, vec3_t pos, scene_t* scene) {
     player->mesh = mesh_ship;
     player->radius = 2.0f;
     player->scene = scene;
+    lives_reset(&player->lives);
 
     return 0;
 }
@@ -50,6 +51,7 @@ static void player_move(player_t* player, float dt) {
 
 void player_update(player_t* player, float dt) {
     player_move(player, dt);
+    lives_update(&player->lives, dt);
 
     if(player->fire_cooldown > 0) {
         player->fire_cooldown -= dt;
@@ -76,6 +78,8 @@ void player_update(player_t* player, float dt) {
 }
 
 void player_draw(player_t* player, renderer_t* renderer, camera_t camera, light_t* lights, int light_count, vec3_t ambient) {
+    if(!lives_visible(&player->lives)) return;
+
     mat4_t model = mat4_identity();   
     model = mat4_mul(mat4_rotx(player->rot.x), model);
     model = mat4_mul(mat4_roty(player->rot.y), model);

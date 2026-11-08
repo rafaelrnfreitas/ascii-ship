@@ -30,9 +30,7 @@ void laser_update(laser_t* laser, float dt) {
         float r = laser->scene->enemies[i].radius + laser->radius;
 
         if(vec3_dist_sq(laser->scene->enemies[i].pos, laser->pos) <= r * r) {
-            enemy_destroy(&laser->scene->enemies[i]);
-            laser->scene->enemies[i] = laser->scene->enemies[laser->scene->enemy_count - 1];
-            laser->scene->enemy_count--;
+            scene_remove_enemy(laser->scene, i);
             laser->active = 0;
 
             for(int i = 0; i < MAX_FLASHES; i++) {

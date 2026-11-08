@@ -72,6 +72,26 @@ int scene_init(scene_t* scene) {
     return 0;
 }
 
+void scene_remove_enemy(scene_t* scene, int i) {
+    enemy_destroy(&scene->enemies[i]);
+    scene->enemies[i] = scene->enemies[--scene->enemy_count];
+}
+
+// An enemy ship that rams the player costs a life and is destroyed; during invulnerability it flies through.
+static void scene_ram_player(scene_t* scene) {
+    player_t* p = &scene->player;
+    for(int i = 0; i < scene->enemy_count; i++) {
+        float r = scene->enemies[i].radius + p->radius;
+        if(vec3_dist_sq(scene->enemies[i].pos, p->pos) > r * r) continue;
+        if(!lives_hit(&p->lives)) continue;
+
+        scene_spawn_flash(scene, scene->enemies[i].pos, 3.0f, 0.2f);
+        screenshake(&scene->screenshake, 0.6f, 0.3f, 1.5f);
+        scene_remove_enemy(scene, i);
+        return;
+    }
+}
+
 void scene_update(scene_t* scene, float dt) {
     player_update(&scene->player, dt);
 
@@ -85,6 +105,7 @@ void scene_update(scene_t* scene, float dt) {
     for(int i = 0; i < MAX_LASERS; i++) {
         laser_update(&scene->lasers[i], dt);
     }
+    scene_ram_player(scene);
 
     for(int i = 0; i < NUM_STARS; i++) {
         scene->stars[i] = vec3_add(scene->stars[i], (vec3_t){0, -400.0 * dt, 0});
