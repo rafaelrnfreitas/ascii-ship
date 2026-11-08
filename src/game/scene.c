@@ -17,12 +17,20 @@ static void respawn_star(scene_t* scene, vec3_t* star) {
     star->z = scene->player.pos.z + random_range(-300, 300);
 }
 
+static int spawn_enemy(scene_t* scene, vec3_t pos) {
+    if(scene->enemy_count >= MAX_ENEMIES) return 1;
+    if(enemy_init(&scene->enemies[scene->enemy_count], pos, scene) != 0) return 1;
+    scene->enemy_count++;
+    return 0;
+}
+
 int scene_init(scene_t* scene) {
     if(!scene) return 1;
     
     meshes_init();
 
     memset(scene, 0, sizeof(scene_t));
+
     scene->ambient = (vec3_t){0.2f, 0.2f, 0.2f};
     scene->camera = (camera_t){
         .pos = {0, -10, 0}, 
@@ -34,9 +42,10 @@ int scene_init(scene_t* scene) {
 
     screenshake_init(&scene->screenshake, scene);
     if(player_init(&scene->player, (vec3_t){0, 0, 0}, scene) != 0) return 1;
-
-    if(enemy_init(&scene->enemies[scene->enemy_count], (vec3_t){0, 10, 0}, scene) != 0) return 1;
-    scene->enemy_count++;
+    
+    spawn_enemy(scene, (vec3_t){0, 10, 0});
+    spawn_enemy(scene, (vec3_t){10, 10, 0});
+    spawn_enemy(scene, (vec3_t){-10, 10, 0});
 
     scene->lights[scene->light_count++] = light_create_dir(
         (vec3_t){0.5f, 0.5f, -1}, 0xFFFFFFFFU, 1.0f
