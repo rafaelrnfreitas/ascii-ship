@@ -109,6 +109,7 @@ void scene_update(scene_t* scene, float dt) {
     for(int i = 0; i < MAX_LASERS; i++) {
         laser_update(&scene->lasers[i], dt);
     }
+    enemy_shot_update(scene, dt);
     scene_ram_player(scene);
 
     for(int i = 0; i < NUM_STARS; i++) {
@@ -151,6 +152,8 @@ void scene_draw(scene_t* scene, renderer_t* renderer) {
     for(int i = 0; i < MAX_LASERS; i++) {
         laser_draw(&scene->lasers[i], renderer, scene->camera, NULL, 0);
     }
+
+    enemy_shot_draw(scene, renderer);
 
     for(int i = 0; i < MAX_FLASHES; i++) {
         flash_t* f = &scene->flashes[i];

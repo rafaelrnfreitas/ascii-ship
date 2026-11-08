@@ -11,6 +11,8 @@
 #include "game/screenshake.h"
 #include "game/flash.h"
 #include "game/waves.h"
+#include "game/tuning.h"
+#include "game/enemy_shot.h"
 
 #define MAX_MESHES 64
 #define NUM_STARS 256
@@ -30,6 +32,7 @@ typedef struct scene_s {
     screenshake_t screenshake;
     flash_t flashes[MAX_FLASHES];
     waves_t waves;
+    enemy_shot_t enemy_shots[ENEMY_SHOT_CAP];
 } scene_t;
 
 int scene_init(scene_t* scene);
