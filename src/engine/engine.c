@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
@@ -7,6 +8,7 @@
 #include "engine/input.h"
 #include "game/scene.h"
 #include "game/lives.h"
+#include "game/tuning.h"
 #include "graphics/font.h"
 #include "graphics/color.h"
 
@@ -15,6 +17,7 @@
 int engine_init(engine_t* engine) {
     if(!engine) return 1;
     *engine = (engine_t){0};
+    srand(GAME_SEED ? GAME_SEED : (unsigned)time(NULL));
    
     if(renderer_init(&engine->renderer, 384, 216, 1280, 720) != 0)
         return 1;
