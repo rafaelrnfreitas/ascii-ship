@@ -35,6 +35,9 @@ void enemy_ai_kill(enemy_t* enemy) {
 }
 
 int enemy_ai_visible(const enemy_t* enemy) {
+    int telegraph = enemy->type == ENEMY_SHOOTER && enemy->state == ENEMY_ACTIVE && enemy->shots_left == 0
+        && enemy->shot_timer > 0 && enemy->shot_timer <= TELEGRAPH_TIME;
+    if(telegraph) return (int)(enemy->shot_timer / ENEMY_BLINK) % 2 == 0;
     return enemy->state != ENEMY_DYING || (int)(enemy->timer / ENEMY_BLINK) % 2 == 0;
 }
 
@@ -61,6 +64,20 @@ static void active(enemy_t* enemy, scene_t* scene, float dt) {
         }
         break;
     case ENEMY_SHOOTER:
+        enemy->shot_timer -= dt;
+        if(enemy->shot_timer <= 0) {
+            if(enemy->shots_left == 0) {
+                enemy->shots_left = SHOOTER_BURST;
+                enemy->shot_timer = 0;
+            } else {
+                enemy_shot_fire(scene, enemy->pos);
+                enemy->shot_timer = SHOOTER_SHOT_GAP;
+                if(--enemy->shots_left == 0) {
+                    enemy->shot_timer = enemy->cooldown;
+                    if(--enemy->bursts_left == 0) set_state(enemy, ENEMY_LEAVING);
+                }
+            }
+        }
         return;
     }
 
@@ -83,6 +100,7 @@ int enemy_ai_update(enemy_t* enemy, scene_t* scene, float dt) {
                 enemy->pos = enemy->target;
                 enemy->vel = (vec3_t){ 0, 0, 0 };
                 set_state(enemy, ENEMY_ACTIVE);
+                enemy->shot_timer = enemy->cooldown;
                 return 0;
             }
             enemy->vel = vec3_scale(vec3_normalize(to), enemy->spd);
