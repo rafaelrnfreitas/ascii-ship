@@ -4,6 +4,7 @@
 
 mesh_t* mesh_ship = NULL;
 mesh_t* mesh_laser = NULL;
+mesh_t* mesh_circle = NULL;
 
 static vertex_t verts_ship[] = {
     {{-0.282392f, 0.842117f, -0.163039f}, {0.000000f, 0.094800f, -0.995500f}},
@@ -300,6 +301,62 @@ static uint32_t laser_colors[] = {
     COLOR_YELLOW
 };
 
+static vertex_t verts_circle[] = {
+    {{ 0.000000f, 0.0f,  0.000000f}, {0.0f, -1.0f, 0.0f}},
+    {{ 1.000000f, 0.0f,  0.000000f}, {0.0f, -1.0f, 0.0f}},
+    {{ 0.707107f, 0.0f,  0.707107f}, {0.0f, -1.0f, 0.0f}},
+
+    {{ 0.000000f, 0.0f,  0.000000f}, {0.0f, -1.0f, 0.0f}},
+    {{ 0.707107f, 0.0f,  0.707107f}, {0.0f, -1.0f, 0.0f}},
+    {{ 0.000000f, 0.0f,  1.000000f}, {0.0f, -1.0f, 0.0f}},
+
+    {{ 0.000000f, 0.0f,  0.000000f}, {0.0f, -1.0f, 0.0f}},
+    {{ 0.000000f, 0.0f,  1.000000f}, {0.0f, -1.0f, 0.0f}},
+    {{-0.707107f, 0.0f,  0.707107f}, {0.0f, -1.0f, 0.0f}},
+
+    {{ 0.000000f, 0.0f,  0.000000f}, {0.0f, -1.0f, 0.0f}},
+    {{-0.707107f, 0.0f,  0.707107f}, {0.0f, -1.0f, 0.0f}},
+    {{-1.000000f, 0.0f,  0.000000f}, {0.0f, -1.0f, 0.0f}},
+
+    {{ 0.000000f, 0.0f,  0.000000f}, {0.0f, -1.0f, 0.0f}},
+    {{-1.000000f, 0.0f,  0.000000f}, {0.0f, -1.0f, 0.0f}},
+    {{-0.707107f, 0.0f, -0.707107f}, {0.0f, -1.0f, 0.0f}},
+
+    {{ 0.000000f, 0.0f,  0.000000f}, {0.0f, -1.0f, 0.0f}},
+    {{-0.707107f, 0.0f, -0.707107f}, {0.0f, -1.0f, 0.0f}},
+    {{ 0.000000f, 0.0f, -1.000000f}, {0.0f, -1.0f, 0.0f}},
+
+    {{ 0.000000f, 0.0f,  0.000000f}, {0.0f, -1.0f, 0.0f}},
+    {{ 0.000000f, 0.0f, -1.000000f}, {0.0f, -1.0f, 0.0f}},
+    {{ 0.707107f, 0.0f, -0.707107f}, {0.0f, -1.0f, 0.0f}},
+
+    {{ 0.000000f, 0.0f,  0.000000f}, {0.0f, -1.0f, 0.0f}},
+    {{ 0.707107f, 0.0f, -0.707107f}, {0.0f, -1.0f, 0.0f}},
+    {{ 1.000000f, 0.0f,  0.000000f}, {0.0f, -1.0f, 0.0f}},
+};
+
+static int circle_indices[] = {
+    0,  1,  2,
+    3,  4,  5,
+    6,  7,  8,
+    9, 10, 11,
+    12, 13, 14,
+    15, 16, 17,
+    18, 19, 20,
+    21, 22, 23,
+};
+
+static uint32_t circle_colors[] = {
+    COLOR_WHITE,
+    COLOR_WHITE,
+    COLOR_WHITE,
+    COLOR_WHITE,
+    COLOR_WHITE,
+    COLOR_WHITE,
+    COLOR_WHITE,
+    COLOR_WHITE
+};
+
 int meshes_init() {
     mesh_ship = mesh_create(
         verts_ship,
@@ -320,6 +377,16 @@ int meshes_init() {
     );
 
     if(!mesh_laser) return 1;
+
+    mesh_circle = mesh_create(
+        verts_circle,
+        sizeof(verts_circle) / sizeof(verts_circle[0]),
+        circle_indices,
+        sizeof(circle_indices) / sizeof(circle_indices[0]),
+        circle_colors
+    );
+
+    if(!mesh_circle) return 1;
 
     return 0;
 }

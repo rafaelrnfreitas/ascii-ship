@@ -18,6 +18,7 @@ typedef struct {
     mesh_t* mesh;
     float radius;
     scene_t* scene;
+    float flash_time;
 } player_t;
 
 int player_init(player_t* player, vec3_t pos, scene_t* scene);

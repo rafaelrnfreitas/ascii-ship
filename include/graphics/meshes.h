@@ -5,6 +5,7 @@
 
 extern mesh_t* mesh_ship;
 extern mesh_t* mesh_laser;
+extern mesh_t* mesh_circle;
 
 int meshes_init();
 void meshes_free();
