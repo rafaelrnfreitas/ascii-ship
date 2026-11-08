@@ -6,15 +6,18 @@
 #include "engine/renderer.h"
 #include "graphics/light.h"
 
+typedef struct scene_s scene_t;
+
 typedef struct {
     vec3_t pos;
     vec3_t vel;
     vec3_t rot;
     float spd;
+    float radius;
     mesh_t* mesh;
 } enemy_t;
 
-int enemy_init(enemy_t* enemy, vec3_t pos);
+int enemy_init(enemy_t* enemy, vec3_t pos, scene_t* scene);
 void enemy_draw(enemy_t* enemy, renderer_t* renderer, camera_t camera, light_t* lights, int light_count, vec3_t ambient);
 void enemy_destroy(enemy_t* enemy);
 

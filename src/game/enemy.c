@@ -2,10 +2,11 @@
 #include "math/mat4.h"
 #include "graphics/meshes.h"
 #include "graphics/color.h"
+#include "game/scene.h"
 
 #define PI 3.14159265f
 
-int enemy_init(enemy_t* enemy, vec3_t pos) {
+int enemy_init(enemy_t* enemy, vec3_t pos, scene_t* scene) {
     mesh_t* src = mesh_ship;
 
     if(!src || !src->colors) return 1;
@@ -29,6 +30,7 @@ int enemy_init(enemy_t* enemy, vec3_t pos) {
     enemy->rot = (vec3_t){0, 0, PI};
     enemy->spd = 10.0f;
     enemy->mesh = mesh;
+    enemy->radius = 2.0f;
 
     return 0;
 }

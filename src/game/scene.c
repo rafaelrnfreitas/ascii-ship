@@ -32,8 +32,10 @@ int scene_init(scene_t* scene) {
         .fov = 1.0f,
     };
 
-    player_init(&scene->player);
-    enemy_init(&scene->enemy, (vec3_t){0, 10, 0});
+    if(player_init(&scene->player, (vec3_t){0, 0, 0}, scene) != 0) return 1;
+
+    if(enemy_init(&scene->enemies[scene->enemy_count], (vec3_t){0, 10, 0}, scene) != 0) return 1;
+    scene->enemy_count++;
 
     scene->lights[scene->light_count++] = light_create_dir(
         (vec3_t){0.5f, 0.5f, -1}, 0xFFFFFFFFU, 1.0f
@@ -48,6 +50,10 @@ int scene_init(scene_t* scene) {
 
 void scene_update(scene_t* scene, float dt) {
     player_update(&scene->player, dt);
+
+    for(int i = 0; i < MAX_LASERS; i++) {
+        laser_update(&scene->lasers[i], dt);
+    }
 
     for(int i = 0; i < NUM_STARS; i++) {
         scene->stars[i] = vec3_add(scene->stars[i], (vec3_t){0, -400.0 * dt, 0});
@@ -81,7 +87,14 @@ void scene_draw(scene_t* scene, renderer_t* renderer) {
     }
 
     player_draw(&scene->player, renderer, scene->camera, scene->lights, scene->light_count, scene->ambient);
-    enemy_draw(&scene->enemy, renderer, scene->camera, scene->lights, scene->light_count, scene->ambient);
+
+    for(int i = 0; i < scene->enemy_count; i++) {
+        enemy_draw(&scene->enemies[i], renderer, scene->camera, scene->lights, scene->light_count, scene->ambient);
+    }
+
+    for(int i = 0; i < MAX_LASERS; i++) {
+        laser_draw(&scene->lasers[i], renderer, scene->camera, NULL, 0);
+    }
 }
 
 void scene_destroy(scene_t* scene) {
@@ -89,6 +102,8 @@ void scene_destroy(scene_t* scene) {
     
     meshes_free();
 
-    enemy_destroy(&scene->enemy);
+    for(int i = 0; i < scene->enemy_count; i++) {
+        enemy_destroy(&scene->enemies[i]);
+    }
     player_destroy(&scene->player);
 }

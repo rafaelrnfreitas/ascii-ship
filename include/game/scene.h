@@ -11,13 +11,17 @@
 
 #define MAX_MESHES 64
 #define NUM_STARS 256
+#define MAX_LASERS 32
+#define MAX_ENEMIES 16
 
-typedef struct {
+typedef struct scene_s {
     camera_t camera;
     player_t player;
-    enemy_t enemy;
+    enemy_t enemies[MAX_ENEMIES];
+    int enemy_count;
     light_t lights[MAX_LIGHTS];
     vec3_t stars[NUM_STARS];
+    laser_t lasers[MAX_LASERS];
     int light_count;
     vec3_t ambient;
 } scene_t;

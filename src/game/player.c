@@ -4,20 +4,23 @@
 #include "graphics/mesh.h"
 #include "math/mat4.h"
 #include "graphics/meshes.h"
+#include "game/scene.h"
 
 #define MAX_ROLL 0.5f
 #define MAX_PITCH 0.3f
 #define TILT_SPEED 8.0f
 #define FIRE_RATE 0.15f
 
-int player_init(player_t* player) {
-    player->pos = (vec3_t){0, 0, 0};
+int player_init(player_t* player, vec3_t pos, scene_t* scene) {
+    player->pos = pos;
     player->vel = (vec3_t){0, 0, 0};
     player->rot = (vec3_t){0, 0, 0};
     player->spd = 10.0f;
     player->fire_cooldown = 0;
 
     player->mesh = mesh_ship;
+    player->radius = 2.0f;
+    player->scene = scene;
 
     return 0;
 }
@@ -54,15 +57,11 @@ void player_update(player_t* player, float dt) {
             vec3_t cannon = vec3_add(player->pos, (vec3_t){0, 2.5f, -0.2f});
 
             for(int i = 0; i < MAX_LASERS; i++) {
-                if(player->lasers[i].active) continue;
-                laser_init(&player->lasers[i], cannon);
+                if(player->scene->lasers[i].active) continue;
+                laser_init(&player->scene->lasers[i], cannon, player->scene);
                 return;
             }
         }
-    }
-
-    for(int i = 0; i < MAX_LASERS; i++) {
-        laser_update(&player->lasers[i], dt);
     }
 }
 
@@ -73,10 +72,6 @@ void player_draw(player_t* player, renderer_t* renderer, camera_t camera, light_
     model = mat4_mul(mat4_translate(player->pos), model);
 
     renderer_draw_mesh(renderer, player->mesh, model, camera, lights, light_count, ambient);
-
-    for(int i = 0; i < MAX_LASERS; i++) {
-        laser_draw(&player->lasers[i], renderer, camera, NULL, 0);
-    }
 }
 
 void player_destroy(player_t* player) {
