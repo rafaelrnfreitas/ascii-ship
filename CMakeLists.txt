@@ -23,6 +23,7 @@ add_executable(game
     src/math/vec4.c
     src/graphics/light.c
     src/graphics/meshes.c
+    src/graphics/font.c
     src/game/screenshake.c
     src/game/flash.c
     src/game/lives.c
