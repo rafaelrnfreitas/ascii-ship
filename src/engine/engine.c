@@ -94,6 +94,7 @@ void engine_run(engine_t* engine) {
         Uint64 curr_time = SDL_GetTicksNS();
         float dt = (float)((double)(curr_time - prev_time) / 1e9);
         prev_time = curr_time;
+        if(dt > 0.05f) dt = 0.05f;
 
         engine_events(engine);
         engine_update(engine, dt);
