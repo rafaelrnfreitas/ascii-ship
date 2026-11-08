@@ -24,6 +24,20 @@ static int spawn_enemy(scene_t* scene, vec3_t pos) {
     return 0;
 }
 
+static void scene_spawn_flash(scene_t* scene, vec3_t pos, float size, float duration) {
+    for(int i = 0; i < MAX_FLASHES; i++) {
+        if(scene->flashes[i].active) continue;
+        scene->flashes[i] = (flash_t){
+            .pos = pos,
+            .time = duration,
+            .duration = duration,
+            .size = size,
+            .active = 1,
+        };
+        return;
+    }
+}
+
 int scene_init(scene_t* scene) {
     if(!scene) return 1;
     
@@ -63,6 +77,11 @@ void scene_update(scene_t* scene, float dt) {
 
     screenshake_update(&scene->screenshake, dt);
 
+    for(int i = 0; i < MAX_FLASHES; i++) {
+        if(!scene->flashes[i].active) continue;
+        scene->flashes[i].time -= dt;
+        if(scene->flashes[i].time <= 0.0f) scene->flashes[i].active = 0;
+    }
     for(int i = 0; i < MAX_LASERS; i++) {
         laser_update(&scene->lasers[i], dt);
     }
@@ -106,6 +125,19 @@ void scene_draw(scene_t* scene, renderer_t* renderer) {
 
     for(int i = 0; i < MAX_LASERS; i++) {
         laser_draw(&scene->lasers[i], renderer, scene->camera, NULL, 0);
+    }
+
+    for(int i = 0; i < MAX_FLASHES; i++) {
+        flash_t* f = &scene->flashes[i];
+        if(!f->active) continue;
+
+        float size = f->size * (f->time / f->duration);   // 1 -> 0
+
+        mat4_t m = mat4_identity();
+        m = mat4_mul(mat4_scale((vec3_t){size, size, size}), m);
+        m = mat4_mul(mat4_translate(f->pos), m);
+
+        renderer_draw_mesh(renderer, mesh_circle, m, scene->camera, NULL, 0, (vec3_t){1, 1, 1});
     }
 }
 

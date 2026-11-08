@@ -4,6 +4,8 @@
 #include "game/scene.h" 
 
 #define LASER_MAX_DIST 80.0f
+#define FLASH_SIZE 2.0f
+#define FLASH_TIME 0.15f
 
 int laser_init(laser_t* laser, vec3_t pos, scene_t* scene) {
     laser->pos = pos;
@@ -32,6 +34,13 @@ void laser_update(laser_t* laser, float dt) {
             laser->scene->enemies[i] = laser->scene->enemies[laser->scene->enemy_count - 1];
             laser->scene->enemy_count--;
             laser->active = 0;
+
+            for(int i = 0; i < MAX_FLASHES; i++) {
+                if(laser->scene->flashes[i].active) continue;
+                flash_init(&laser->scene->flashes[i], laser->pos, FLASH_SIZE, FLASH_TIME);
+                break;
+            }
+
             return;
         }
     }

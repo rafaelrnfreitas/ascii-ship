@@ -24,7 +24,6 @@ int player_init(player_t* player, vec3_t pos, scene_t* scene) {
     player->mesh = mesh_ship;
     player->radius = 2.0f;
     player->scene = scene;
-    player->flash_time = 0.0f;
 
     return 0;
 }
@@ -52,14 +51,11 @@ static void player_move(player_t* player, float dt) {
 void player_update(player_t* player, float dt) {
     player_move(player, dt);
 
-    if(player->flash_time > 0.0f) player->flash_time -= dt;
-
     if(player->fire_cooldown > 0) {
         player->fire_cooldown -= dt;
     } else {
         if(key_down(SDL_SCANCODE_SPACE)) {
             player->fire_cooldown = FIRE_RATE;
-            player->flash_time = FLASH_TIME;
             screenshake(&player->scene->screenshake, 0.15f, 0.1f, 1.5f);
 
             vec3_t cannon = vec3_add(player->pos, CANNON_OFFSET);
@@ -67,7 +63,13 @@ void player_update(player_t* player, float dt) {
             for(int i = 0; i < MAX_LASERS; i++) {
                 if(player->scene->lasers[i].active) continue;
                 laser_init(&player->scene->lasers[i], cannon, player->scene);
-                return;
+                break;
+            }
+
+            for(int i = 0; i < MAX_FLASHES; i++) {
+                if(player->scene->flashes[i].active) continue;
+                flash_init(&player->scene->flashes[i], cannon, FLASH_SIZE, FLASH_TIME);
+                break;
             }
         }
     }
@@ -80,19 +82,6 @@ void player_draw(player_t* player, renderer_t* renderer, camera_t camera, light_
     model = mat4_mul(mat4_translate(player->pos), model);
 
     renderer_draw_mesh(renderer, player->mesh, model, camera, lights, light_count, ambient);
-
-    if(player->flash_time > 0.0f) {
-        float t = player->flash_time / FLASH_TIME;
-        float size = FLASH_SIZE * t;
-
-        vec3_t cannon = vec3_add(player->pos, CANNON_OFFSET);
-
-        mat4_t flash = mat4_identity();
-        flash = mat4_mul(mat4_scale((vec3_t){size, size, size}), flash);
-        flash = mat4_mul(mat4_translate(cannon), flash);
-
-        renderer_draw_mesh(renderer, mesh_circle, flash, camera, NULL, 0, (vec3_t){1, 1, 1});
-    }
 }
 
 void player_destroy(player_t* player) {
