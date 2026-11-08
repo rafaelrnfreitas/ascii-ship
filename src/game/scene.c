@@ -32,6 +32,7 @@ int scene_init(scene_t* scene) {
         .fov = 1.0f,
     };
 
+    screenshake_init(&scene->screenshake, scene);
     if(player_init(&scene->player, (vec3_t){0, 0, 0}, scene) != 0) return 1;
 
     if(enemy_init(&scene->enemies[scene->enemy_count], (vec3_t){0, 10, 0}, scene) != 0) return 1;
@@ -50,6 +51,8 @@ int scene_init(scene_t* scene) {
 
 void scene_update(scene_t* scene, float dt) {
     player_update(&scene->player, dt);
+
+    screenshake_update(&scene->screenshake, dt);
 
     for(int i = 0; i < MAX_LASERS; i++) {
         laser_update(&scene->lasers[i], dt);

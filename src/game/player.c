@@ -52,8 +52,9 @@ void player_update(player_t* player, float dt) {
         player->fire_cooldown -= dt;
     } else {
         if(key_down(SDL_SCANCODE_SPACE)) {
-            player->fire_cooldown = FIRE_RATE;
+            screenshake(&player->scene->screenshake, 0.075f, 0.2f, 0.12f);
 
+            player->fire_cooldown = FIRE_RATE;
             vec3_t cannon = vec3_add(player->pos, (vec3_t){0, 2.5f, -0.2f});
 
             for(int i = 0; i < MAX_LASERS; i++) {

@@ -8,6 +8,7 @@
 #include "game/laser.h"
 #include "engine/renderer.h"
 #include "graphics/light.h"
+#include "game/screenshake.h"
 
 #define MAX_MESHES 64
 #define NUM_STARS 256
@@ -24,6 +25,7 @@ typedef struct scene_s {
     laser_t lasers[MAX_LASERS];
     int light_count;
     vec3_t ambient;
+    screenshake_t screenshake;
 } scene_t;
 
 int scene_init(scene_t* scene);
