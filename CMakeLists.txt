@@ -29,3 +29,4 @@ add_executable(game
 
 target_include_directories(game PRIVATE "${CMAKE_SOURCE_DIR}/include")
 target_link_libraries(game PRIVATE SDL3::SDL3 m)
+target_compile_options(game PRIVATE -Wall -Wextra)
