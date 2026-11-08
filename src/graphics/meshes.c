@@ -396,4 +396,6 @@ void meshes_free() {
     mesh_ship = NULL;
     mesh_destroy(mesh_laser);
     mesh_laser = NULL;
+    mesh_destroy(mesh_circle);
+    mesh_circle = NULL;
 }
