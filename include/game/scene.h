@@ -10,6 +10,7 @@
 #include "graphics/light.h"
 #include "game/screenshake.h"
 #include "game/flash.h"
+#include "game/waves.h"
 
 #define MAX_MESHES 64
 #define NUM_STARS 256
@@ -28,6 +29,7 @@ typedef struct scene_s {
     vec3_t ambient;
     screenshake_t screenshake;
     flash_t flashes[MAX_FLASHES];
+    waves_t waves;
 } scene_t;
 
 int scene_init(scene_t* scene);
@@ -35,5 +37,6 @@ void scene_update(scene_t* scene, float dt);
 void scene_draw(scene_t* scene, renderer_t* renderer);
 void scene_destroy(scene_t* scene);
 void scene_remove_enemy(scene_t* scene, int i);
+int spawn_enemy(scene_t* scene, vec3_t pos);
 
 #endif
