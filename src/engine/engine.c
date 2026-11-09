@@ -7,6 +7,8 @@
 #include "engine/input.h"
 #include "game/scene.h"
 #include "game/lives.h"
+#include "graphics/font.h"
+#include "graphics/color.h"
 
 #define TARGET_FRAME_NS (1000000000ull / 60)
 
@@ -70,6 +72,18 @@ void engine_draw(engine_t* engine) {
     
     renderer_clear(&engine->renderer);
     scene_draw(&engine->scene, &engine->renderer);
+    char hud[16];
+    snprintf(hud, sizeof hud, "LIVES %d", engine->hud_lives);
+    font_draw(&engine->renderer, 4, 4, hud, 1, COLOR_WHITE);
+    if(engine->game_over) {
+        int w = engine->renderer.width, h = engine->renderer.height;
+        font_draw(&engine->renderer, (w - font_width("GAME OVER", 3)) / 2, h / 2 - 30, "GAME OVER", 3, COLOR_RED);
+        static const char* items[] = { "RESTART", "QUIT" };
+        for(int i = 0; i < 2; i++) {
+            int sel = engine->menu_sel == i;
+            font_draw(&engine->renderer, (w - font_width(items[i], 2)) / 2, h / 2 + 14 + i * 20, items[i], 2, sel ? COLOR_YELLOW : COLOR_GRAY);
+        }
+    }
     renderer_draw(&engine->renderer);
 }
 
