@@ -3,6 +3,7 @@
 #include "graphics/meshes.h"
 #include "graphics/color.h"
 #include "game/scene.h"
+#include "game/enemy_ai.h"
 
 #define PI 3.14159265f
 
@@ -36,6 +37,8 @@ int enemy_init(enemy_t* enemy, vec3_t pos, scene_t* scene) {
 }
 
 void enemy_draw(enemy_t* enemy, renderer_t* renderer, camera_t camera, light_t* lights, int light_count, vec3_t ambient) {
+    if(!enemy_ai_visible(enemy)) return;
+
     mat4_t model = mat4_identity();
     model = mat4_mul(mat4_rotx(enemy->rot.x), model);
     model = mat4_mul(mat4_roty(enemy->rot.y), model);

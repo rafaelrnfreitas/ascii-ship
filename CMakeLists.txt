@@ -27,6 +27,7 @@ add_executable(game
     src/game/screenshake.c
     src/game/flash.c
     src/game/lives.c
+    src/game/enemy_ai.c
 )
 
 target_include_directories(game PRIVATE "${CMAKE_SOURCE_DIR}/include")

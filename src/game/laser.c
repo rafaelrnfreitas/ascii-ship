@@ -2,6 +2,7 @@
 #include "math/mat4.h"
 #include "graphics/meshes.h"
 #include "game/scene.h" 
+#include "game/enemy_ai.h"
 
 #define LASER_MAX_DIST 80.0f
 #define FLASH_SIZE 2.0f
@@ -27,10 +28,11 @@ void laser_update(laser_t* laser, float dt) {
     laser->dist += laser->spd * dt;
 
     for(int i = 0; i < laser->scene->enemy_count; i++) {
+        if(laser->scene->enemies[i].state == ENEMY_DYING) continue;
         float r = laser->scene->enemies[i].radius + laser->radius;
 
         if(vec3_dist_sq(laser->scene->enemies[i].pos, laser->pos) <= r * r) {
-            scene_remove_enemy(laser->scene, i);
+            enemy_ai_kill(&laser->scene->enemies[i]);
             laser->active = 0;
 
             for(int i = 0; i < MAX_FLASHES; i++) {

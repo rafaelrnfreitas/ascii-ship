@@ -6,6 +6,7 @@
 #include "engine/input.h"
 #include "game/scene.h"
 #include "graphics/meshes.h"
+#include "game/enemy_ai.h"
 
 static float random_range(float min, float max) {
     return min + (float)rand() / (float)RAND_MAX * (max - min);
@@ -82,12 +83,13 @@ static void scene_ram_player(scene_t* scene) {
     player_t* p = &scene->player;
     for(int i = 0; i < scene->enemy_count; i++) {
         float r = scene->enemies[i].radius + p->radius;
+        if(scene->enemies[i].state == ENEMY_DYING) continue;
         if(vec3_dist_sq(scene->enemies[i].pos, p->pos) > r * r) continue;
         if(!lives_hit(&p->lives)) continue;
 
         scene_spawn_flash(scene, scene->enemies[i].pos, 3.0f, 0.2f);
         screenshake(&scene->screenshake, 0.6f, 0.3f, 1.5f);
-        scene_remove_enemy(scene, i);
+        enemy_ai_kill(&scene->enemies[i]);
         return;
     }
 }
@@ -101,6 +103,10 @@ void scene_update(scene_t* scene, float dt) {
         if(!scene->flashes[i].active) continue;
         scene->flashes[i].time -= dt;
         if(scene->flashes[i].time <= 0.0f) scene->flashes[i].active = 0;
+    }
+    for(int i = 0; i < scene->enemy_count; ) {
+        if(enemy_ai_update(&scene->enemies[i], scene, dt)) scene_remove_enemy(scene, i);
+        else i++;
     }
     for(int i = 0; i < MAX_LASERS; i++) {
         laser_update(&scene->lasers[i], dt);
