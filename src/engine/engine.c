@@ -33,11 +33,31 @@ int engine_init(engine_t* engine) {
     return 0;
 }
 
+static void save_score(engine_t* engine) {
+    leaderboard_insert(&engine->leaderboard, engine->name, engine->scene.score);
+    leaderboard_save(&engine->leaderboard, engine->scores_path);
+}
+
+static void quit(engine_t* engine) {
+    if(engine->screen == SCREEN_ENTER_NAME) save_score(engine);
+    engine->running = 0;
+}
+
+static void game_over(engine_t* engine) {
+    if(!leaderboard_qualifies(&engine->leaderboard, engine->scene.score)) {
+        engine->screen = SCREEN_GAME_OVER;
+        return;
+    }
+    strcpy(engine->name, "AAA");
+    engine->name_pos = 0;
+    engine->screen = SCREEN_ENTER_NAME;
+}
+
 static void engine_handle(engine_t* engine, SDL_Event* e) {
-    if(e->type == SDL_EVENT_QUIT) engine->running = 0;
+    if(e->type == SDL_EVENT_QUIT) quit(engine);
     if(e->type != lives_event_type) return;
     if(e->user.code == LIVES_CHANGED) engine->hud_lives = (int)(intptr_t)e->user.data1;
-    if(e->user.code == GAME_OVER) engine->screen = SCREEN_GAME_OVER;
+    if(e->user.code == GAME_OVER) game_over(engine);
 }
 
 static void engine_events(engine_t* engine) {
@@ -67,7 +87,7 @@ void engine_update(engine_t* engine, float dt) {
     if(!engine || !engine->running) return;
 
     if(key_pressed(SDL_SCANCODE_ESCAPE) && engine->screen != SCREEN_LEADERBOARD) {
-        engine->running = 0;
+        quit(engine);
         return;
     }
 
@@ -84,8 +104,18 @@ void engine_update(engine_t* engine, float dt) {
     case SCREEN_PLAYING:
         scene_update(&engine->scene, dt);
         break;
-    case SCREEN_ENTER_NAME:
+    case SCREEN_ENTER_NAME: {
+        char* c = &engine->name[engine->name_pos];
+        if(key_pressed(SDL_SCANCODE_UP) || key_pressed(SDL_SCANCODE_W)) *c = *c == 'Z' ? 'A' : *c + 1;
+        if(key_pressed(SDL_SCANCODE_DOWN) || key_pressed(SDL_SCANCODE_S)) *c = *c == 'A' ? 'Z' : *c - 1;
+        if(key_pressed(SDL_SCANCODE_RIGHT) || key_pressed(SDL_SCANCODE_D)) engine->name_pos = (engine->name_pos + 1) % 3;
+        if(key_pressed(SDL_SCANCODE_LEFT) || key_pressed(SDL_SCANCODE_A)) engine->name_pos = (engine->name_pos + 2) % 3;
+        if(enter_pressed()) {
+            save_score(engine);
+            engine->screen = SCREEN_GAME_OVER;
+        }
         break;
+    }
     case SCREEN_GAME_OVER: {
         int pick = menu_input(engine);
         if(pick && engine->menu_sel == 1) { engine->running = 0; return; }
@@ -123,6 +153,19 @@ static void draw_leaderboard(engine_t* engine) {
     draw_centered(engine, engine->renderer.height - 20, "PRESS ENTER", 1, COLOR_GRAY);
 }
 
+static void draw_enter_name(engine_t* engine) {
+    int h = engine->renderer.height;
+    draw_centered(engine, h / 2 - 50, "NEW HIGH SCORE", 2, COLOR_YELLOW);
+    draw_centered(engine, h / 2 - 25, "TYPE YOUR INITIALS", 1, COLOR_GRAY);
+
+    int x = (engine->renderer.width - font_width("AAA", 3)) / 2;
+    for(int i = 0; i < 3; i++) {
+        char letter[2] = { engine->name[i], 0 };
+        font_draw(&engine->renderer, x + i * 18, h / 2 - 5, letter, 3, engine->name_pos == i ? COLOR_YELLOW : COLOR_WHITE);
+    }
+    draw_centered(engine, h / 2 + 30, "PRESS ENTER TO SAVE", 1, COLOR_GRAY);
+}
+
 static void draw_hud(engine_t* engine) {
     char hud[16];
     snprintf(hud, sizeof hud, "LIVES %d", engine->hud_lives);
@@ -149,6 +192,7 @@ void engine_draw(engine_t* engine) {
         break;
     case SCREEN_ENTER_NAME:
         draw_hud(engine);
+        draw_enter_name(engine);
         break;
     case SCREEN_GAME_OVER:
         draw_hud(engine);

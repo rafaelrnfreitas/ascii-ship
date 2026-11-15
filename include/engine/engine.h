@@ -14,6 +14,8 @@ typedef struct {
     int menu_sel;
     leaderboard_t leaderboard;
     char scores_path[512];
+    char name[4];
+    int name_pos;
     renderer_t renderer;
     scene_t scene;
 } engine_t;
