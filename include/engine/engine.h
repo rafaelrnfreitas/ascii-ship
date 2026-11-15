@@ -3,12 +3,17 @@
 
 #include "renderer.h"
 #include "game/scene.h"
+#include "game/leaderboard.h"
+
+typedef enum { SCREEN_MENU, SCREEN_LEADERBOARD, SCREEN_PLAYING, SCREEN_ENTER_NAME, SCREEN_GAME_OVER } screen_t;
 
 typedef struct {
     int running;
-    int game_over;
+    screen_t screen;
     int hud_lives;
     int menu_sel;
+    leaderboard_t leaderboard;
+    char scores_path[512];
     renderer_t renderer;
     scene_t scene;
 } engine_t;
