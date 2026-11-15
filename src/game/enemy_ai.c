@@ -68,7 +68,7 @@ static void active(enemy_t* enemy, scene_t* scene, float dt) {
                 enemy->shots_left = SHOOTER_BURST;
                 enemy->shot_timer = 0;
             } else {
-                enemy_shot_fire(scene, enemy->pos);
+                enemy_shot_fire(scene, enemy->pos, vec3_sub(scene->player.pos, enemy->pos));
                 enemy->shot_timer = SHOOTER_SHOT_GAP;
                 if(--enemy->shots_left == 0) {
                     enemy->shot_timer = enemy->cooldown;

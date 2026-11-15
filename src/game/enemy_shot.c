@@ -5,12 +5,12 @@
 #include "graphics/meshes.h"
 #include "math/mat4.h"
 
-void enemy_shot_fire(scene_t* scene, vec3_t from) {
+void enemy_shot_fire(scene_t* scene, vec3_t from, vec3_t dir) {
     for(int i = 0; i < ENEMY_SHOT_CAP; i++) {
         enemy_shot_t* s = &scene->enemy_shots[i];
         if(s->active) continue;
         s->pos = from;
-        s->vel = vec3_scale(vec3_normalize(vec3_sub(scene->player.pos, from)), ENEMY_SHOT_SPEED);
+        s->vel = vec3_scale(vec3_normalize(dir), ENEMY_SHOT_SPEED);
         s->active = 1;
         return;
     }
