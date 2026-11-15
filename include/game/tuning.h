@@ -23,18 +23,24 @@
 #define SHOT_GAP 0.25f
 #define TELEGRAPH_TIME 0.4f
 
-#define ENEMY_SHOT_CAP 24
+#define DRIFTER_SWAY 3.0f
+#define DRIFTER_SWAY_FREQ 1.5f
+#define CHASER_LOOP 3.0f
+#define CHASER_LOOP_FREQ 1.2f
+#define CHASER_FAN 0.2f
+
+#define ENEMY_SHOT_CAP 48
 #define ENEMY_SHOT_SPEED 25.0f
 #define ENEMY_SHOT_RADIUS 0.6f
 
 // Waves: {type, count, seconds between spawns}, cycled forever
 #define WAVE_TABLE { \
-    { ENEMY_DRIFTER, 4, 0.6f }, \
-    { ENEMY_DRIFTER, 5, 0.4f }, \
-    { ENEMY_CHASER,  3, 1.0f }, \
+    { ENEMY_DRIFTER, 3, 0.8f }, \
+    { ENEMY_DRIFTER, 4, 0.8f }, \
+    { ENEMY_CHASER,  2, 2.0f }, \
     { ENEMY_SHOOTER, 2, 1.5f }, \
-    { ENEMY_DRIFTER, 6, 0.5f }, \
-    { ENEMY_CHASER,  4, 0.8f }, \
+    { ENEMY_DRIFTER, 4, 0.8f }, \
+    { ENEMY_CHASER,  2, 2.0f }, \
     { ENEMY_SHOOTER, 3, 1.2f }, \
 }
 #define WAVE_GAP 1.5f
@@ -48,6 +54,6 @@
 #define DIFF_COOLDOWN_STEP 0.1f
 #define DIFF_COOLDOWN_MIN 0.4f
 #define DIFF_GROW_EVERY 2
-#define DIFF_GROW_MAX 3
+#define DIFF_GROW_MAX 1
 
 #endif

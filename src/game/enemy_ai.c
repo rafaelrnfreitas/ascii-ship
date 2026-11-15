@@ -40,11 +40,41 @@ int enemy_ai_visible(const enemy_t* enemy) {
     return enemy->state != ENEMY_DYING || (int)(enemy->timer / ENEMY_BLINK) % 2 == 0;
 }
 
+static vec3_t rotate_z(vec3_t v, float a) {
+    return (vec3_t){ v.x * cosf(a) - v.y * sinf(a), v.x * sinf(a) + v.y * cosf(a), v.z };
+}
+
 static void fire(enemy_t* enemy, scene_t* scene) {
-    enemy_shot_fire(scene, enemy->pos, vec3_sub(scene->player.pos, enemy->pos));
+    vec3_t aim = vec3_sub(scene->player.pos, enemy->pos);
+
+    if(enemy->type == ENEMY_CHASER) {
+        enemy_shot_fire(scene, enemy->pos, rotate_z(aim, -CHASER_FAN));
+        enemy_shot_fire(scene, enemy->pos, rotate_z(aim, CHASER_FAN));
+    }
+    enemy_shot_fire(scene, enemy->pos, aim);
+}
+
+static void move(enemy_t* enemy) {
+    float t = enemy->timer;
+    vec3_t offset = { 0, 0, 0 };
+
+    switch(enemy->type) {
+    case ENEMY_DRIFTER:
+        offset.x = DRIFTER_SWAY * sinf(t * DRIFTER_SWAY_FREQ);
+        break;
+    case ENEMY_CHASER:
+        offset.x = CHASER_LOOP * sinf(t * CHASER_LOOP_FREQ);
+        offset.z = CHASER_LOOP * 0.5f * sinf(2.0f * t * CHASER_LOOP_FREQ);
+        break;
+    case ENEMY_SHOOTER:
+        break;
+    }
+    enemy->pos = vec3_add(enemy->target, offset);
 }
 
 static void active(enemy_t* enemy, scene_t* scene, float dt) {
+    move(enemy);
+
     enemy->shot_timer -= dt;
     if(enemy->shot_timer > 0) return;
 
