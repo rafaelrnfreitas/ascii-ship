@@ -43,7 +43,7 @@ static vec3_t pick_lane(scene_t* scene, float cam_y) {
 static void spawn(scene_t* scene, enemy_type_t type, int level) {
     float cam_y = scene->camera.pos.y;
     vec3_t lane = pick_lane(scene, cam_y);
-    vec3_t target = on_ray(lane, type == ENEMY_SHOOTER ? SHOOTER_HOLD_Y : 0.0f, cam_y);
+    vec3_t target = on_ray(lane, HOLD_Y, cam_y);
     vec3_t pos = on_ray(lane, SPAWN_Y, cam_y);
     if(vec3_dist(pos, scene->player.pos) < SPAWN_SAFE_DIST) pos.y = scene->player.pos.y + SPAWN_SAFE_DIST;
 

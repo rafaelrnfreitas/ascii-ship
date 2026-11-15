@@ -6,7 +6,6 @@
 
 #define SPAWN_Y 85.0f
 #define SPAWN_SAFE_DIST 30.0f
-#define ENTER_Y 40.0f
 #define DESPAWN_Y -12.0f
 #define BOUNDS_X 60.0f
 #define BOUNDS_Z 40.0f
@@ -15,19 +14,13 @@
 #define ENEMY_BLINK 0.05f
 
 #define DRIFTER_SPEED 18.0f
-#define DRIFTER_SWAY 2.0f
-#define DRIFTER_SWAY_FREQ 1.5f
-
 #define CHASER_SPEED 16.0f
-#define CHASER_TURN 1.2f
-#define CHASER_COMMIT_DIST 6.0f
-
 #define SHOOTER_SPEED 20.0f
-#define SHOOTER_HOLD_Y 30.0f
-#define SHOOTER_BURSTS 2
-#define SHOOTER_BURST 3
-#define SHOOTER_COOLDOWN 1.8f
-#define SHOOTER_SHOT_GAP 0.25f
+#define HOLD_Y 30.0f
+#define BURSTS 2
+#define BURST_SHOTS 3
+#define BURST_COOLDOWN 1.8f
+#define SHOT_GAP 0.25f
 #define TELEGRAPH_TIME 0.4f
 
 #define ENEMY_SHOT_CAP 24
