@@ -8,7 +8,7 @@ typedef struct {
     int running;
     int game_over;
     int hud_lives;
-    int menu_sel;   // game over menu: 0 restart, 1 quit
+    int menu_sel;
     renderer_t renderer;
     scene_t scene;
 } engine_t;

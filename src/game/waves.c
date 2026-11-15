@@ -14,13 +14,11 @@ static float random_range(float min, float max) {
     return min + (float)rand() / (float)RAND_MAX * (max - min);
 }
 
-// Point on the camera ray through lane (a point on the y=0 plane) at depth y.
 static vec3_t on_ray(vec3_t lane, float y, float cam_y) {
     float k = (y - cam_y) / -cam_y;
     return (vec3_t){ lane.x * k, y, lane.z * k };
 }
 
-// Lane in the central area, as far as possible from the lanes of enemies still coming in.
 static vec3_t pick_lane(scene_t* scene, float cam_y) {
     vec3_t lane = { 0, 0, 0 };
     float best = -1.0f;
@@ -34,7 +32,7 @@ static vec3_t pick_lane(scene_t* scene, float cam_y) {
         for(int i = 0; i < scene->enemy_count; i++) {
             enemy_t* e = &scene->enemies[i];
             if(e->state >= ENEMY_LEAVING) continue;
-            float k = -cam_y / (e->target.y - cam_y);   // target sits on the enemy's ray: scale it back to its lane
+            float k = -cam_y / (e->target.y - cam_y);
             d = fminf(d, vec3_dist(c, (vec3_t){ e->target.x * k, 0, e->target.z * k }));
         }
         if(d > best) { best = d; lane = c; }
@@ -43,7 +41,6 @@ static vec3_t pick_lane(scene_t* scene, float cam_y) {
 }
 
 static void spawn(scene_t* scene, enemy_type_t type, int level) {
-    // the enemy flies down the camera ray through its lane, so it stays put on screen and grows
     float cam_y = scene->camera.pos.y;
     vec3_t lane = pick_lane(scene, cam_y);
     vec3_t target = on_ray(lane, type == ENEMY_SHOOTER ? SHOOTER_HOLD_Y : 0.0f, cam_y);
@@ -60,7 +57,6 @@ static void spawn(scene_t* scene, enemy_type_t type, int level) {
     e->vel = vec3_scale(vec3_normalize(vec3_sub(target, pos)), e->spd);
 }
 
-// Endless run: spawn the current wave, wait for the screen to clear, pause, start the next one harder.
 void waves_update(scene_t* scene, float dt) {
     waves_t* w = &scene->waves;
     int level = w->started > 0 ? w->started - 1 : 0;

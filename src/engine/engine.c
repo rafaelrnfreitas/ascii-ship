@@ -64,7 +64,6 @@ void engine_update(engine_t* engine, float dt) {
         scene_update(&engine->scene, dt);
     }
 
-    // apply lives events pushed this frame before drawing, so the HUD never lags a frame
     SDL_Event e;
     while(SDL_PeepEvents(&e, 1, SDL_GETEVENT, lives_event_type, lives_event_type) > 0)
         engine_handle(engine, &e);

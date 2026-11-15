@@ -27,7 +27,7 @@ void font_draw(renderer_t* r, int x, int y, const char* text, int scale, uint32_
     for(; *text; text++, x += 6 * scale) {
         char c = *text;
         int i = (c >= 'A' && c <= 'Z') ? c - 'A' : (c >= '0' && c <= '9') ? c - '0' + 26 : -1;
-        if(i < 0) continue; // space and unknown chars are blank
+        if(i < 0) continue;
         for(int row = 0; row < 7; row++)
             for(int col = 0; col < 5; col++)
                 if(glyphs[i][row] & (0x10 >> col))

@@ -26,7 +26,6 @@ void lives_reset(lives_t* lives) {
     lives_push(LIVES_CHANGED, lives->count);
 }
 
-// Returns 1 if a life was taken. Invulnerability starts at once, so later hits in the same frame are ignored.
 int lives_hit(lives_t* lives) {
     if(lives->invuln > 0 || lives->count <= 0) return 0;
 

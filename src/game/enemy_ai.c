@@ -9,7 +9,6 @@ static void set_state(enemy_t* enemy, enemy_state_t state) {
     enemy->timer = 0;
 }
 
-// Call right after enemy_init: picks the type, its speed and its color.
 void enemy_ai_setup(enemy_t* enemy, enemy_type_t type, float speed_mul, float cooldown_mul) {
     static const float speeds[] = { DRIFTER_SPEED, CHASER_SPEED, SHOOTER_SPEED };
     static const uint32_t colors[] = { COLOR_RED, COLOR_ORANGE, COLOR_MAGENTA };
@@ -41,7 +40,6 @@ int enemy_ai_visible(const enemy_t* enemy) {
     return enemy->state != ENEMY_DYING || (int)(enemy->timer / ENEMY_BLINK) % 2 == 0;
 }
 
-// Rotate dir toward want by at most max_angle radians.
 static vec3_t turn_toward(vec3_t dir, vec3_t want, float max_angle) {
     float angle = acosf(fmaxf(-1.0f, fminf(1.0f, vec3_dot(dir, want))));
     if(angle <= max_angle) return want;
@@ -54,7 +52,7 @@ static void active(enemy_t* enemy, scene_t* scene, float dt) {
 
     switch(enemy->type) {
     case ENEMY_DRIFTER:
-        enemy->pos.x += DRIFTER_SWAY * cosf(enemy->life * DRIFTER_SWAY_FREQ) * dt;   // sway on top of the heading
+        enemy->pos.x += DRIFTER_SWAY * cosf(enemy->life * DRIFTER_SWAY_FREQ) * dt;
         break;
     case ENEMY_CHASER:
         if(enemy->pos.y > player.y + CHASER_COMMIT_DIST) {
@@ -81,11 +79,9 @@ static void active(enemy_t* enemy, scene_t* scene, float dt) {
         return;
     }
 
-    // drifters and chasers leave once they have flown past the player
     if(enemy->pos.y < player.y - 4.0f) set_state(enemy, ENEMY_LEAVING);
 }
 
-// Returns 1 when the enemy should be removed.
 int enemy_ai_update(enemy_t* enemy, scene_t* scene, float dt) {
     enemy->timer += dt;
     enemy->life += dt;
@@ -112,11 +108,9 @@ int enemy_ai_update(enemy_t* enemy, scene_t* scene, float dt) {
         active(enemy, scene, dt);
         break;
     case ENEMY_LEAVING:
-        // parked shooters peel off sideways and up; the rest keep their heading
         if(enemy->type == ENEMY_SHOOTER)
             enemy->vel = (vec3_t){ enemy->pos.x < 0 ? -enemy->spd : enemy->spd, 0, enemy->spd * 0.5f };
         else {
-            // peel off toward the nearest screen edge instead of flying into the camera
             vec3_t out = { enemy->pos.x, 0, enemy->pos.z };
             if(vec3_len(out) < 0.1f) out.x = 1;
             enemy->vel = vec3_add(vec3_scale(vec3_normalize(out), enemy->spd * 1.5f), (vec3_t){ 0, -enemy->spd * 0.5f, 0 });

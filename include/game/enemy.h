@@ -20,11 +20,11 @@ typedef struct {
     mesh_t* mesh;
     enemy_type_t type;
     enemy_state_t state;
-    vec3_t target;      // shooter: where it parks
-    float timer;        // time in the current state
-    float life;         // total time alive
-    float shot_timer;   // shooter: countdown to the next shot
-    float cooldown;     // shooter: pause between bursts, scaled by difficulty
+    vec3_t target;
+    float timer;
+    float life;
+    float shot_timer;
+    float cooldown;
     int bursts_left;
     int shots_left;
 } enemy_t;

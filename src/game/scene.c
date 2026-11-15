@@ -75,7 +75,6 @@ void scene_remove_enemy(scene_t* scene, int i) {
     scene->enemies[i] = scene->enemies[--scene->enemy_count];
 }
 
-// An enemy ship that rams the player costs a life and is destroyed; during invulnerability it flies through.
 static void scene_ram_player(scene_t* scene) {
     player_t* p = &scene->player;
     for(int i = 0; i < scene->enemy_count; i++) {
@@ -159,7 +158,7 @@ void scene_draw(scene_t* scene, renderer_t* renderer) {
         flash_t* f = &scene->flashes[i];
         if(!f->active) continue;
 
-        float size = f->size * (f->time / f->duration);   // 1 -> 0
+        float size = f->size * (f->time / f->duration);
 
         mat4_t m = mat4_identity();
         m = mat4_mul(mat4_scale((vec3_t){size, size, size}), m);

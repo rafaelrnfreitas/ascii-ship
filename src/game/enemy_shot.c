@@ -5,7 +5,6 @@
 #include "graphics/meshes.h"
 #include "math/mat4.h"
 
-// Aims at where the player is right now, no prediction. No free slot: the shot is dropped (hard cap).
 void enemy_shot_fire(scene_t* scene, vec3_t from) {
     for(int i = 0; i < ENEMY_SHOT_CAP; i++) {
         enemy_shot_t* s = &scene->enemy_shots[i];
@@ -33,7 +32,7 @@ void enemy_shot_update(scene_t* scene, float dt) {
         }
         if(vec3_dist_sq(s->pos, p->pos) > r * r) continue;
 
-        s->active = 0;   // shots are destroyed even when the player is invulnerable
+        s->active = 0;
         if(lives_hit(&p->lives)) screenshake(&scene->screenshake, 0.6f, 0.3f, 1.5f);
     }
 }
