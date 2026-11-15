@@ -18,11 +18,19 @@ static void respawn_star(scene_t* scene, vec3_t* star) {
     star->z = scene->player.pos.z + random_range(-300, 300);
 }
 
-int spawn_enemy(scene_t* scene, vec3_t pos) {
-    if(scene->enemy_count >= MAX_ENEMIES) return 1;
-    if(enemy_init(&scene->enemies[scene->enemy_count], pos, scene) != 0) return 1;
+enemy_t* spawn_enemy(scene_t* scene, vec3_t pos) {
+    if(scene->enemy_count >= MAX_ENEMIES) return NULL;
+
+    enemy_t* enemy = calloc(1, sizeof(enemy_t));
+    if(!enemy) return NULL;
+    if(enemy_init(enemy, pos, scene) != 0) {
+        free(enemy);
+        return NULL;
+    }
+    enemy->next = scene->enemies;
+    scene->enemies = enemy;
     scene->enemy_count++;
-    return 0;
+    return enemy;
 }
 
 static void scene_spawn_flash(scene_t* scene, vec3_t pos, float size, float duration) {
@@ -70,22 +78,25 @@ int scene_init(scene_t* scene) {
     return 0;
 }
 
-void scene_remove_enemy(scene_t* scene, int i) {
-    enemy_destroy(&scene->enemies[i]);
-    scene->enemies[i] = scene->enemies[--scene->enemy_count];
+void scene_remove_enemy(scene_t* scene, enemy_t** link) {
+    enemy_t* enemy = *link;
+    *link = enemy->next;
+    enemy_destroy(enemy);
+    free(enemy);
+    scene->enemy_count--;
 }
 
 static void scene_ram_player(scene_t* scene) {
     player_t* p = &scene->player;
-    for(int i = 0; i < scene->enemy_count; i++) {
-        float r = scene->enemies[i].radius + p->radius;
-        if(scene->enemies[i].state == ENEMY_DYING) continue;
-        if(vec3_dist_sq(scene->enemies[i].pos, p->pos) > r * r) continue;
+    for(enemy_t* e = scene->enemies; e; e = e->next) {
+        float r = e->radius + p->radius;
+        if(e->state == ENEMY_DYING) continue;
+        if(vec3_dist_sq(e->pos, p->pos) > r * r) continue;
         if(!lives_hit(&p->lives)) continue;
 
-        scene_spawn_flash(scene, scene->enemies[i].pos, 3.0f, 0.2f);
+        scene_spawn_flash(scene, e->pos, 3.0f, 0.2f);
         screenshake(&scene->screenshake, 0.6f, 0.3f, 1.5f);
-        enemy_ai_kill(&scene->enemies[i]);
+        enemy_ai_kill(e);
         return;
     }
 }
@@ -101,9 +112,10 @@ void scene_update(scene_t* scene, float dt) {
         if(scene->flashes[i].time <= 0.0f) scene->flashes[i].active = 0;
     }
     waves_update(scene, dt);
-    for(int i = 0; i < scene->enemy_count; ) {
-        if(enemy_ai_update(&scene->enemies[i], scene, dt)) scene_remove_enemy(scene, i);
-        else i++;
+    enemy_t** link = &scene->enemies;
+    while(*link) {
+        if(enemy_ai_update(*link, scene, dt)) scene_remove_enemy(scene, link);
+        else link = &(*link)->next;
     }
     for(int i = 0; i < MAX_LASERS; i++) {
         laser_update(&scene->lasers[i], dt);
@@ -144,8 +156,8 @@ void scene_draw(scene_t* scene, renderer_t* renderer) {
 
     player_draw(&scene->player, renderer, scene->camera, scene->lights, scene->light_count, scene->ambient);
 
-    for(int i = 0; i < scene->enemy_count; i++) {
-        enemy_draw(&scene->enemies[i], renderer, scene->camera, scene->lights, scene->light_count, scene->ambient);
+    for(enemy_t* e = scene->enemies; e; e = e->next) {
+        enemy_draw(e, renderer, scene->camera, scene->lights, scene->light_count, scene->ambient);
     }
 
     for(int i = 0; i < MAX_LASERS; i++) {
@@ -173,8 +185,6 @@ void scene_destroy(scene_t* scene) {
     
     meshes_free();
 
-    for(int i = 0; i < scene->enemy_count; i++) {
-        enemy_destroy(&scene->enemies[i]);
-    }
+    while(scene->enemies) scene_remove_enemy(scene, &scene->enemies);
     player_destroy(&scene->player);
 }

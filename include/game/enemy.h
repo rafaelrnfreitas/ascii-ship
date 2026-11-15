@@ -11,7 +11,7 @@ typedef struct scene_s scene_t;
 typedef enum { ENEMY_DRIFTER, ENEMY_CHASER, ENEMY_SHOOTER } enemy_type_t;
 typedef enum { ENEMY_ENTERING, ENEMY_ACTIVE, ENEMY_LEAVING, ENEMY_DYING } enemy_state_t;
 
-typedef struct {
+typedef struct enemy_s {
     vec3_t pos;
     vec3_t vel;
     vec3_t rot;
@@ -27,6 +27,7 @@ typedef struct {
     float cooldown;
     int bursts_left;
     int shots_left;
+    struct enemy_s* next;
 } enemy_t;
 
 int enemy_init(enemy_t* enemy, vec3_t pos, scene_t* scene);

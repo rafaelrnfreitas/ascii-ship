@@ -22,7 +22,7 @@
 typedef struct scene_s {
     camera_t camera;
     player_t player;
-    enemy_t enemies[MAX_ENEMIES];
+    enemy_t* enemies;
     int enemy_count;
     light_t lights[MAX_LIGHTS];
     vec3_t stars[NUM_STARS];
@@ -40,7 +40,7 @@ int scene_init(scene_t* scene);
 void scene_update(scene_t* scene, float dt);
 void scene_draw(scene_t* scene, renderer_t* renderer);
 void scene_destroy(scene_t* scene);
-void scene_remove_enemy(scene_t* scene, int i);
-int spawn_enemy(scene_t* scene, vec3_t pos);
+void scene_remove_enemy(scene_t* scene, enemy_t** link);
+enemy_t* spawn_enemy(scene_t* scene, vec3_t pos);
 
 #endif

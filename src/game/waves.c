@@ -29,8 +29,7 @@ static vec3_t pick_lane(scene_t* scene, float cam_y) {
             random_range(-SPAWN_CENTER_Z, SPAWN_CENTER_Z),
         };
         float d = 1e9f;
-        for(int i = 0; i < scene->enemy_count; i++) {
-            enemy_t* e = &scene->enemies[i];
+        for(enemy_t* e = scene->enemies; e; e = e->next) {
             if(e->state >= ENEMY_LEAVING) continue;
             float k = -cam_y / (e->target.y - cam_y);
             d = fminf(d, vec3_dist(c, (vec3_t){ e->target.x * k, 0, e->target.z * k }));
@@ -47,11 +46,11 @@ static void spawn(scene_t* scene, enemy_type_t type, int level) {
     vec3_t pos = on_ray(lane, SPAWN_Y, cam_y);
     if(vec3_dist(pos, scene->player.pos) < SPAWN_SAFE_DIST) pos.y = scene->player.pos.y + SPAWN_SAFE_DIST;
 
-    if(spawn_enemy(scene, pos) != 0) return;
+    enemy_t* e = spawn_enemy(scene, pos);
+    if(!e) return;
 
     float speed_mul = fminf(1.0f + DIFF_SPEED_STEP * level, DIFF_SPEED_MAX);
     float cooldown_mul = fmaxf(1.0f / (1.0f + DIFF_COOLDOWN_STEP * level), DIFF_COOLDOWN_MIN);
-    enemy_t* e = &scene->enemies[scene->enemy_count - 1];
     enemy_ai_setup(e, type, speed_mul, cooldown_mul);
     e->target = target;
     e->vel = vec3_scale(vec3_normalize(vec3_sub(target, pos)), e->spd);
@@ -69,7 +68,7 @@ void waves_update(scene_t* scene, float dt) {
         w->timer = cur->spacing;
         return;
     }
-    if(scene->enemy_count > 0) { w->timer = WAVE_GAP; return; }
+    if(scene->enemies) { w->timer = WAVE_GAP; return; }
     if((w->timer -= dt) > 0) return;
 
     level = w->started++;

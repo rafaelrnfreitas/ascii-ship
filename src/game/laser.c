@@ -27,14 +27,14 @@ void laser_update(laser_t* laser, float dt) {
     laser->pos = vec3_add(vec3_scale(laser->vel, laser->spd * dt), laser->pos);
     laser->dist += laser->spd * dt;
 
-    for(int i = 0; i < laser->scene->enemy_count; i++) {
-        if(laser->scene->enemies[i].state == ENEMY_DYING) continue;
-        float r = laser->scene->enemies[i].radius + laser->radius;
+    for(enemy_t* e = laser->scene->enemies; e; e = e->next) {
+        if(e->state == ENEMY_DYING) continue;
+        float r = e->radius + laser->radius;
 
-        if(vec3_dist_sq(laser->scene->enemies[i].pos, laser->pos) <= r * r) {
+        if(vec3_dist_sq(e->pos, laser->pos) <= r * r) {
             static const int points[] = SCORE_TABLE;
-            laser->scene->score += points[laser->scene->enemies[i].type];
-            enemy_ai_kill(&laser->scene->enemies[i]);
+            laser->scene->score += points[e->type];
+            enemy_ai_kill(e);
             laser->active = 0;
 
             for(int i = 0; i < MAX_FLASHES; i++) {
