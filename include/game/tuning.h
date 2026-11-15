@@ -33,6 +33,9 @@
 #define ENEMY_SHOT_SPEED 25.0f
 #define ENEMY_SHOT_RADIUS 0.6f
 
+// Points for a laser kill, by type: drifter, chaser, shooter
+#define SCORE_TABLE { 100, 150, 250 }
+
 // Waves: {type, count, seconds between spawns}, cycled forever
 #define WAVE_TABLE { \
     { ENEMY_DRIFTER, 3, 0.8f }, \

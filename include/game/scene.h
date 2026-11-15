@@ -33,6 +33,7 @@ typedef struct scene_s {
     flash_t flashes[MAX_FLASHES];
     waves_t waves;
     enemy_shot_t enemy_shots[ENEMY_SHOT_CAP];
+    int score;
 } scene_t;
 
 int scene_init(scene_t* scene);

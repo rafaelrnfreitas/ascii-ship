@@ -32,6 +32,8 @@ void laser_update(laser_t* laser, float dt) {
         float r = laser->scene->enemies[i].radius + laser->radius;
 
         if(vec3_dist_sq(laser->scene->enemies[i].pos, laser->pos) <= r * r) {
+            static const int points[] = SCORE_TABLE;
+            laser->scene->score += points[laser->scene->enemies[i].type];
             enemy_ai_kill(&laser->scene->enemies[i]);
             laser->active = 0;
 

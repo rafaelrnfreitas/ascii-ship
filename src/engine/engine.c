@@ -77,6 +77,8 @@ void engine_draw(engine_t* engine) {
     char hud[16];
     snprintf(hud, sizeof hud, "LIVES %d", engine->hud_lives);
     font_draw(&engine->renderer, 4, 4, hud, 1, COLOR_WHITE);
+    snprintf(hud, sizeof hud, "SCORE %d", engine->scene.score);
+    font_draw(&engine->renderer, engine->renderer.width - 4 - font_width(hud, 1), 4, hud, 1, COLOR_WHITE);
     if(engine->game_over) {
         int w = engine->renderer.width, h = engine->renderer.height;
         font_draw(&engine->renderer, (w - font_width("GAME OVER", 3)) / 2, h / 2 - 30, "GAME OVER", 3, COLOR_RED);
