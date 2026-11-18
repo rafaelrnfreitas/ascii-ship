@@ -2,7 +2,7 @@
 
 A small arcade space shooter written in C, rendered by a custom software 3D renderer on top of [SDL3](https://github.com/libsdl-org/SDL). Fly your ship, shoot down endless waves of enemies that get harder over time, and put your initials on the leaderboard.
 
-**Demo video:** [docs/video-ascii-ship.mp4](docs/video-ascii-ship.mp4)
+**Demo video:** [Watch on YouTube](https://youtu.be/9Z6Daq8gJuk) ([or download the file](docs/video-ascii-ship.mp4))
 
 ## Features
 
